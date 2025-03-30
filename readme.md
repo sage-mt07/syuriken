@@ -1,4 +1,4 @@
-# KSQL Entity Framework 要件定義書
+﻿# KSQL Entity Framework 要件定義書
 
 ## 1. 概要
 
