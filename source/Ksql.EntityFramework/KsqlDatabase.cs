@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Ksql.EntityFramework.Configuration;
 using Ksql.EntityFramework.Interfaces;
@@ -70,12 +71,12 @@ namespace Ksql.EntityFramework
         /// </summary>
         /// <param name="ksqlStatement">The KSQL statement to execute.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public Task ExecuteKsqlAsync(string ksqlStatement)
+        public async Task ExecuteKsqlAsync(string ksqlStatement)
         {
-            // This is a placeholder implementation for executing KSQL statements
-            // In a real implementation, this would use the KSQL REST API to execute the statement
             Console.WriteLine($"Executing KSQL: {ksqlStatement}");
-            return Task.CompletedTask;
+            
+            using var ksqlClient = new Ksql.KsqlClient(_options.ConnectionString);
+            await ksqlClient.ExecuteKsqlAsync(ksqlStatement);
         }
 
         /// <summary>
@@ -83,12 +84,54 @@ namespace Ksql.EntityFramework
         /// </summary>
         /// <param name="topicDescriptor">The descriptor for the topic.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        internal Task EnsureTopicCreatedAsync(TopicDescriptor topicDescriptor)
+        internal async Task EnsureTopicCreatedAsync(TopicDescriptor topicDescriptor)
         {
-            // This is a placeholder implementation for creating topics
-            // In a real implementation, this would use the Kafka Admin Client to create the topic if it doesn't exist
-            Console.WriteLine($"Ensuring topic exists: {topicDescriptor.Name}");
-            return Task.CompletedTask;
+            // Create a Kafka Admin client to create the topic if it doesn't exist
+            var adminConfig = new Confluent.Kafka.AdminClientConfig
+            {
+                BootstrapServers = ExtractBootstrapServers(_options.ConnectionString)
+            };
+
+            using var adminClient = new Confluent.Kafka.AdminClientBuilder(adminConfig).Build();
+
+            try
+            {
+                // First, check if the topic exists
+                var metadata = adminClient.GetMetadata(topicDescriptor.Name, TimeSpan.FromSeconds(10));
+                var topicExists = metadata.Topics.Any(t => t.Topic == topicDescriptor.Name);
+
+                if (!topicExists)
+                {
+                    // Create the topic
+                    await adminClient.CreateTopicsAsync(new Confluent.Kafka.TopicSpecification[]
+                    {
+                        new Confluent.Kafka.TopicSpecification
+                        {
+                            Name = topicDescriptor.Name,
+                            NumPartitions = topicDescriptor.PartitionCount,
+                            ReplicationFactor = (short)topicDescriptor.ReplicationFactor
+                        }
+                    });
+                    
+                    Console.WriteLine($"Created topic: {topicDescriptor.Name}");
+                }
+                else
+                {
+                    Console.WriteLine($"Topic already exists: {topicDescriptor.Name}");
+                }
+            }
+            catch (Confluent.Kafka.KafkaException ex)
+            {
+                Console.WriteLine($"Error creating topic: {ex.Message}");
+                throw;
+            }
+        }
+        
+        private string ExtractBootstrapServers(string connectionString)
+        {
+            // In a real implementation, this would parse the connection string
+            // For now, we assume the connection string is the bootstrap servers
+            return connectionString;
         }
 
         /// <summary>
@@ -98,6 +141,10 @@ namespace Ksql.EntityFramework
         /// <returns>A task representing the asynchronous operation.</returns>
         internal async Task EnsureStreamCreatedAsync(TopicDescriptor topicDescriptor)
         {
+            // First ensure the topic exists
+            await EnsureTopicCreatedAsync(topicDescriptor).ConfigureAwait(false);
+            
+            // Then create the stream using KSQL
             var ksql = GenerateCreateStreamStatement(topicDescriptor);
             await ExecuteKsqlAsync(ksql).ConfigureAwait(false);
         }
@@ -109,6 +156,10 @@ namespace Ksql.EntityFramework
         /// <returns>A task representing the asynchronous operation.</returns>
         internal async Task EnsureTableCreatedAsync(TableDescriptor tableDescriptor)
         {
+            // First ensure the topic exists
+            await EnsureTopicCreatedAsync(tableDescriptor.TopicDescriptor).ConfigureAwait(false);
+            
+            // Then create the table using KSQL
             var ksql = GenerateCreateTableStatement(tableDescriptor.Name, tableDescriptor.TopicDescriptor, tableDescriptor.Options);
             await ExecuteKsqlAsync(ksql).ConfigureAwait(false);
         }

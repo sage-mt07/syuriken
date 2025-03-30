@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Ksql.EntityFramework.Configuration;
 using Ksql.EntityFramework.Interfaces;
@@ -67,17 +69,54 @@ namespace Ksql.EntityFramework
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
+        private Kafka.KafkaProducer<string, T> GetProducer()
+        {
+            return new Kafka.KafkaProducer<string, T>(Name, _context.Options);
+        }
+
+        private Kafka.KafkaConsumer<string, T> GetConsumer(string groupId = null)
+        {
+            return new Kafka.KafkaConsumer<string, T>(Name, _context.Options, groupId);
+        }
+
         /// <summary>
         /// Gets an entity from the table by its key.
         /// </summary>
         /// <param name="key">The primary key of the entity.</param>
         /// <returns>A task representing the asynchronous operation, with the result containing the entity or null if not found.</returns>
-        public Task<T?> GetAsync(object key)
+        public async Task<T?> GetAsync(object key)
         {
-            // This is a placeholder implementation for getting an entity from a table by its key
-            // In a real implementation, this would use the KSQL API to get the entity by its key
+            // For a real implementation, we would use the KSQL pull query API
+            // For now, we use a simplistic approach that returns the first entity with the matching key from the topic
             Console.WriteLine($"Getting entity from table '{Name}' with key '{key}'");
-            return Task.FromResult<T?>(null);
+            
+            var consumer = GetConsumer();
+            try
+            {
+                // Set a reasonable timeout for finding the entity
+                using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                
+                await foreach (var entity in consumer.ConsumeAsync(cancellationTokenSource.Token))
+                {
+                    // Check if the entity has the matching key
+                    var entityKey = GetEntityKey(entity);
+                    if (entityKey != null && entityKey.ToString() == key.ToString())
+                    {
+                        return entity;
+                    }
+                }
+                
+                return null;
+            }
+            catch (OperationCanceledException)
+            {
+                // Timeout expired
+                return null;
+            }
+            finally
+            {
+                consumer.Dispose();
+            }
         }
 
         /// <summary>
@@ -95,12 +134,38 @@ namespace Ksql.EntityFramework
         /// </summary>
         /// <param name="entity">The entity to insert.</param>
         /// <returns>A task representing the asynchronous operation, with the result indicating whether the insert was successful.</returns>
-        public Task<bool> InsertAsync(T entity)
+        public async Task<bool> InsertAsync(T entity)
         {
-            // This is a placeholder implementation for inserting an entity into a table
-            // In a real implementation, this would use the KSQL API to insert the entity
-            Console.WriteLine($"Inserting entity into table '{Name}': {entity}");
-            return Task.FromResult(true);
+            try
+            {
+                var key = GetEntityKey(entity) ?? Guid.NewGuid().ToString();
+                using var producer = GetProducer();
+                await producer.ProduceAsync(key.ToString(), entity);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inserting entity into table '{Name}': {ex.Message}");
+                return false;
+            }
+        }
+        
+        private object GetEntityKey(T entity)
+        {
+            // Find properties with [Key] attribute and get their values
+            var keyProperties = typeof(T).GetProperties()
+                .Where(p => p.GetCustomAttributes(typeof(Attributes.KeyAttribute), true).Any());
+                
+            foreach (var prop in keyProperties)
+            {
+                var value = prop.GetValue(entity);
+                if (value != null)
+                {
+                    return value;
+                }
+            }
+            
+            return null;
         }
 
         /// <summary>
@@ -130,11 +195,37 @@ namespace Ksql.EntityFramework
         /// Retrieves all entities from the table as a list.
         /// </summary>
         /// <returns>A task representing the asynchronous operation, with the result containing the list of entities.</returns>
-        public Task<List<T>> ToListAsync()
+        public async Task<List<T>> ToListAsync()
         {
-            // This is a placeholder implementation for retrieving all entities from a table as a list
-            // In a real implementation, this would use the KSQL API to query the table
-            return Task.FromResult(new List<T>());
+            var result = new List<T>();
+            var processedKeys = new HashSet<string>();
+            
+            var consumer = GetConsumer();
+            try
+            {
+                // Set a reasonable timeout for consuming all entities
+                using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                
+                await foreach (var entity in consumer.ConsumeAsync(cancellationTokenSource.Token))
+                {
+                    var key = GetEntityKey(entity)?.ToString();
+                    if (key != null && !processedKeys.Contains(key))
+                    {
+                        processedKeys.Add(key);
+                        result.Add(entity);
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Timeout expired - return what we've collected so far
+            }
+            finally
+            {
+                consumer.Dispose();
+            }
+            
+            return result;
         }
 
         /// <summary>
@@ -143,10 +234,19 @@ namespace Ksql.EntityFramework
         /// <returns>An asynchronous enumerable of change notifications.</returns>
         public async IAsyncEnumerable<ChangeNotification<T>> ObserveChangesAsync()
         {
-            // This is a placeholder implementation for observing changes to a table
-            // In a real implementation, this would use the Kafka Consumer API to observe changes to the topic
-            await Task.Yield();
-            yield break;
+            var consumer = GetConsumer();
+            
+            try
+            {
+                await foreach (var notification in consumer.ObserveChangesAsync())
+                {
+                    yield return notification;
+                }
+            }
+            finally
+            {
+                consumer.Dispose();
+            }
         }
 
         /// <summary>

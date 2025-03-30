@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 using Ksql.EntityFramework.Interfaces;
 using Ksql.EntityFramework.Models;
@@ -55,16 +56,29 @@ namespace Ksql.EntityFramework
             _schemaManager = schemaManager ?? throw new ArgumentNullException(nameof(schemaManager));
         }
 
+        private Kafka.KafkaProducer<string, T> GetProducer()
+        {
+            return new Kafka.KafkaProducer<string, T>(Name, _context.Options);
+        }
+
+        private Kafka.KafkaConsumer<string, T> GetConsumer(string groupId = null)
+        {
+            return new Kafka.KafkaConsumer<string, T>(Name, _context.Options, groupId);
+        }
+
         /// <summary>
         /// Produces a single entity to the stream with an auto-generated key.
         /// </summary>
         /// <param name="entity">The entity to produce.</param>
         /// <returns>A task representing the asynchronous operation, with the result indicating the offset of the produced record.</returns>
-        public Task<long> ProduceAsync(T entity)
+        public async Task<long> ProduceAsync(T entity)
         {
-            // In a real implementation, this would use the Kafka Producer API to produce the entity
-            Console.WriteLine($"Producing entity to stream '{Name}': {entity}");
-            return Task.FromResult(0L);
+            // Generate a key if the entity has a key attribute
+            string key = GetEntityKey(entity) ?? Guid.NewGuid().ToString();
+            
+            using var producer = GetProducer();
+            var result = await producer.ProduceAsync(key, entity);
+            return result.Offset.Value;
         }
 
         /// <summary>
@@ -73,11 +87,11 @@ namespace Ksql.EntityFramework
         /// <param name="key">The key for the record.</param>
         /// <param name="entity">The entity to produce.</param>
         /// <returns>A task representing the asynchronous operation, with the result indicating the offset of the produced record.</returns>
-        public Task<long> ProduceAsync(string key, T entity)
+        public async Task<long> ProduceAsync(string key, T entity)
         {
-            // In a real implementation, this would use the Kafka Producer API to produce the entity with the specified key
-            Console.WriteLine($"Producing entity to stream '{Name}' with key '{key}': {entity}");
-            return Task.FromResult(0L);
+            using var producer = GetProducer();
+            var result = await producer.ProduceAsync(key, entity);
+            return result.Offset.Value;
         }
 
         /// <summary>
@@ -85,11 +99,36 @@ namespace Ksql.EntityFramework
         /// </summary>
         /// <param name="entities">The entities to produce.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public Task ProduceBatchAsync(IEnumerable<T> entities)
+        public async Task ProduceBatchAsync(IEnumerable<T> entities)
         {
-            // In a real implementation, this would use the Kafka Producer API to produce the entities in a batch
-            Console.WriteLine($"Producing {entities.Count()} entities to stream '{Name}' in a batch");
-            return Task.CompletedTask;
+            var keyValuePairs = new List<KeyValuePair<string, T>>();
+            
+            foreach (var entity in entities)
+            {
+                string key = GetEntityKey(entity) ?? Guid.NewGuid().ToString();
+                keyValuePairs.Add(new KeyValuePair<string, T>(key, entity));
+            }
+            
+            using var producer = GetProducer();
+            await producer.ProduceBatchAsync(keyValuePairs);
+        }
+        
+        private string GetEntityKey(T entity)
+        {
+            // Find properties with [Key] attribute and get their values
+            var keyProperties = typeof(T).GetProperties()
+                .Where(p => p.GetCustomAttributes(typeof(Attributes.KeyAttribute), true).Any());
+                
+            foreach (var prop in keyProperties)
+            {
+                var value = prop.GetValue(entity)?.ToString();
+                if (!string.IsNullOrEmpty(value))
+                {
+                    return value;
+                }
+            }
+            
+            return null;
         }
 
         /// <summary>
@@ -110,10 +149,19 @@ namespace Ksql.EntityFramework
         /// <returns>An asynchronous enumerable of entities.</returns>
         public async IAsyncEnumerable<T> SubscribeAsync()
         {
-            // This is a placeholder implementation for subscribing to a stream
-            // In a real implementation, this would use the Kafka Consumer API to subscribe to the topic
-            await Task.Yield();
-            yield break;
+            var consumer = GetConsumer();
+            
+            try
+            {
+                await foreach (var entity in consumer.ConsumeAsync())
+                {
+                    yield return entity;
+                }
+            }
+            finally
+            {
+                consumer.Dispose();
+            }
         }
 
         /// <summary>
@@ -156,10 +204,19 @@ namespace Ksql.EntityFramework
         /// <returns>An asynchronous enumerable of change notifications.</returns>
         public async IAsyncEnumerable<ChangeNotification<T>> ObserveChangesAsync()
         {
-            // This is a placeholder implementation for observing changes to a stream
-            // In a real implementation, this would use the Kafka Consumer API to observe changes to the topic
-            await Task.Yield();
-            yield break;
+            var consumer = GetConsumer();
+            
+            try
+            {
+                await foreach (var notification in consumer.ObserveChangesAsync())
+                {
+                    yield return notification;
+                }
+            }
+            finally
+            {
+                consumer.Dispose();
+            }
         }
 
         /// <summary>
