@@ -280,6 +280,69 @@ await foreach (var change in context.Customers.ObserveChangesAsync())
 }
 ```
 
+### Kafkaのメタデータを利用する例
+
+Kafkaのメタデータを利用して、トピックやパーティションの情報を取得する方法を以下に示します。
+
+#### メタデータ取得のコード例
+```csharp
+using Confluent.Kafka;
+
+class KafkaMetadataExample
+{
+    public static void Main(string[] args)
+    {
+        var config = new ConsumerConfig
+        {
+            BootstrapServers = "localhost:9092",
+            GroupId = "metadata-example-group",
+            AutoOffsetReset = AutoOffsetReset.Earliest
+        };
+
+        using (var consumer = new ConsumerBuilder<Ignore, string>(config).Build())
+        {
+            // メタデータを取得
+            var metadata = consumer.GetMetadata(TimeSpan.FromSeconds(10));
+
+            Console.WriteLine("Cluster ID: " + metadata.ClusterId);
+            Console.WriteLine("Brokers:");
+            foreach (var broker in metadata.Brokers)
+            {
+                Console.WriteLine($"  Broker: {broker.BrokerId}, Host: {broker.Host}, Port: {broker.Port}");
+            }
+
+            Console.WriteLine("Topics:");
+            foreach (var topic in metadata.Topics)
+            {
+                Console.WriteLine($"  Topic: {topic.Topic}, Error: {topic.Error}");
+                foreach (var partition in topic.Partitions)
+                {
+                    Console.WriteLine($"    Partition: {partition.PartitionId}, Leader: {partition.Leader}, Replicas: {string.Join(",", partition.Replicas)}, InSyncReplicas: {string.Join(",", partition.InSyncReplicas)}");
+                }
+            }
+        }
+    }
+}
+```
+
+#### 説明
+1. **ConsumerConfigの設定**:
+   - `BootstrapServers`: Kafkaブローカーのアドレスを指定します。
+   - `GroupId`: コンシューマーグループのIDを指定します。
+   - `AutoOffsetReset`: オフセットが見つからない場合の動作を指定します。
+
+2. **GetMetadataメソッド**:
+   - Kafkaクラスターのメタデータを取得します。
+   - トピック、パーティション、ブローカーの情報を含みます。
+
+3. **出力例**:
+   - クラスターID、ブローカー情報、トピック情報、パーティション情報をコンソールに出力します。
+
+#### 使用シナリオ
+- **トラブルシューティング**: クラスターの構成やトピックの状態を確認する。
+- **モニタリング**: パーティションのリーダーやレプリカの状態を監視する。
+- **動的設定**: メタデータを基に動的にトピックやパーティションを操作する。
+
 ## 4. POCO (Plain Old CLR Objects) の設計
 
 ### 4.1 基本定義
@@ -494,3 +557,62 @@ public interface IKsqlDbContext : IDisposable, IAsyncDisposable
     // 他のコンテキスト操作
 }
 ```
+
+## 10. エンベロープパターンとスキーマ拡張
+
+### 10.1 エンベロープパターンの基本設計
+エンベロープパターンでは、メッセージの本来の業務データ（Payload）と、それに付随するメタデータを分離してラッピングします。以下のような共通のラッパークラスを定義します。
+
+```csharp
+public class MessageEnvelope<T>
+{
+    public T Payload { get; set; }
+}
+```
+
+この設計では、アプリケーションが通常処理する際は `Payload` 部分のみを対象とし、joinのキーやフィルタ条件も業務データ（Payload）から抽出できます。
+
+### 10.2 Avroスキーマへの組み込み
+ksqlでjoin処理を行う際には、Kafkaの値に含まれるフィールドが対象となりますので、エンベロープ全体またはその一部として扱います。以下はAvroスキーマの例です。
+
+```json
+{
+  "namespace": "com.example",
+  "type": "record",
+  "name": "OrderEnvelope",
+  "fields": [
+    {
+      "name": "Payload",
+      "type": {
+        "type": "record",
+        "name": "Order",
+        "fields": [
+          {"name": "orderId", "type": "string"},
+          {"name": "customerId", "type": "string"},
+          {"name": "amount", "type": "double"},
+          {"name": "orderTime", "type": "long"}
+        ]
+      }
+    }
+  ]
+}
+```
+
+このようにすることで、プロダクションのメッセージは通常の業務データとして扱われます。
+
+### 10.3 ksqlでのjoin処理
+
+#### 10.3.1 joinキーの抽出
+エンベロープ形式の場合、ksql側では `Payload` の中からjoinキーを抽出する必要があります。以下はjoin処理の例です。
+
+```sql
+CREATE STREAM joined_orders AS
+  SELECT a.Payload->orderId AS orderIdA,
+         b.Payload->orderId AS orderIdB,
+         a.Payload->customerId AS customerId
+  FROM orders_envelope_stream a
+  JOIN orders_envelope_stream b
+    ON a.Payload->customerId = b.Payload->customerId;
+```
+
+この例では、joinの条件に業務上のキー（`customerId`）を使用して処理を行います。
