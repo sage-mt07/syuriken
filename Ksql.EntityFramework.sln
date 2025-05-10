@@ -7,9 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ksql.EntityFramework", "sou
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{66014559-9F96-474B-B485-6F9F0C0C88AD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9CCFB641-6C50-4E98-B4A5-8A2FD3D3F9E3}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{42D00C23-E70B-4B71-874C-569F72DD0978}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ksql.EntityFramework.Tests", "source\Ksql.EntityFramework.Tests\Ksql.EntityFramework.Tests.csproj", "{B39B9C58-C74A-F17F-709E-09EAD594EDB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +21,10 @@ Global
 		{12B00FCD-A006-4F06-8595-358B01BCCA87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12B00FCD-A006-4F06-8595-358B01BCCA87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12B00FCD-A006-4F06-8595-358B01BCCA87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B39B9C58-C74A-F17F-709E-09EAD594EDB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B39B9C58-C74A-F17F-709E-09EAD594EDB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B39B9C58-C74A-F17F-709E-09EAD594EDB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B39B9C58-C74A-F17F-709E-09EAD594EDB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -24,7 +24,7 @@ namespace Ksql.EntityFramework.Tests.Extensions
             
             // Make the mock implement IQueryable
             mockTable.Setup(t => t.Provider).Returns(new TestQueryProvider<TestCustomer>());
-            mockTable.Setup(t => t.Expression).Returns(Expression.Constant(mockTable.Object));
+            mockTable.Setup(t => t.Expression).Returns(System.Linq.Expressions.Expression.Constant(mockTable.Object));
             mockTable.Setup(t => t.ElementType).Returns(typeof(TestCustomer));
             mockTable.Setup(t => t.GetEnumerator()).Returns(expected.GetEnumerator());
 
@@ -62,7 +62,7 @@ namespace Ksql.EntityFramework.Tests.Extensions
             
             // Make the mock implement IQueryable
             mockStream.Setup(s => s.Provider).Returns(new TestQueryProvider<TestOrder>());
-            mockStream.Setup(s => s.Expression).Returns(Expression.Constant(mockStream.Object));
+            mockStream.Setup(s => s.Expression).Returns(System.Linq.Expressions.Expression.Constant(mockStream.Object));
             mockStream.Setup(s => s.ElementType).Returns(typeof(TestOrder));
             mockStream.Setup(s => s.GetEnumerator()).Returns(Enumerable.Empty<TestOrder>().GetEnumerator());
 

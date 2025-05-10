@@ -7,7 +7,7 @@ namespace Ksql.EntityFramework.Schema;
 /// <summary>
 /// Manages schema information for entity types in the KSQL database.
 /// </summary>
-internal class SchemaManager
+public class SchemaManager
 {
     private readonly KsqlDbContextOptions _options;
     private readonly Dictionary<Type, TopicDescriptor> _topicDescriptors = new Dictionary<Type, TopicDescriptor>();

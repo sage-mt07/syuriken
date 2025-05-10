@@ -5,7 +5,7 @@ namespace Ksql.EntityFramework.Schema;
 /// <summary>
 /// Describes a Kafka topic and its associated schema.
 /// </summary>
-internal class TopicDescriptor
+public class TopicDescriptor
 {
     /// <summary>
     /// Gets or sets the name of the topic.

@@ -11,7 +11,7 @@ namespace Ksql.EntityFramework;
 /// Implementation of a KSQL stream.
 /// </summary>
 /// <typeparam name="T">The type of entity in the stream.</typeparam>
-internal class KsqlStream<T> : IKsqlStream<T> where T : class
+public class KsqlStream<T> : IKsqlStream<T> where T : class
 {
     private readonly KsqlDbContext _context;
     private readonly SchemaManager _schemaManager;

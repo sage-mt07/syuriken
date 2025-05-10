@@ -10,7 +10,7 @@ namespace Ksql.EntityFramework;
 /// Implementation of a KSQL table.
 /// </summary>
 /// <typeparam name="T">The type of entity in the table.</typeparam>
-internal class KsqlTable<T> : IKsqlTable<T> where T : class
+public class KsqlTable<T> : IKsqlTable<T> where T : class
 {
     private readonly KsqlDbContext _context;
     private readonly SchemaManager _schemaManager;
