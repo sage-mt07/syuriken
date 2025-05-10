@@ -1,3 +1,4 @@
+using Confluent.Kafka;
 using Confluent.Kafka.Admin;
 using Ksql.EntityFramework.Configuration;
 using Ksql.EntityFramework.Interfaces;
@@ -77,40 +78,49 @@ internal class KsqlDatabase : IKsqlDatabase, IDisposable, IAsyncDisposable
         await ksqlClient.ExecuteKsqlAsync(ksqlStatement);
     }
 
-    /// <summary>
-    /// Ensures that a topic exists for the specified topic descriptor.
-    /// </summary>
-    /// <param name="topicDescriptor">The descriptor for the topic.</param>
-    /// <returns>A task representing the asynchronous operation.</returns>
     internal async Task EnsureTopicCreatedAsync(TopicDescriptor topicDescriptor)
     {
-        // Create a Kafka Admin client to create the topic if it doesn't exist
-        var adminConfig = new Confluent.Kafka.AdminClientConfig
+        if (topicDescriptor == null)
+            throw new ArgumentNullException(nameof(topicDescriptor));
+
+        if (string.IsNullOrEmpty(topicDescriptor.Name))
+            throw new ArgumentException("Topic name cannot be null or empty", nameof(topicDescriptor));
+
+        // Extract bootstrap servers from connection string
+        string bootstrapServers = ExtractBootstrapServers(_options.ConnectionString);
+        if (string.IsNullOrEmpty(bootstrapServers))
+            throw new InvalidOperationException("Could not extract bootstrap servers from connection string");
+
+        // Create admin client config
+        var adminConfig = new AdminClientConfig
         {
-            BootstrapServers = ExtractBootstrapServers(_options.ConnectionString)
+            BootstrapServers = bootstrapServers
         };
 
-        using var adminClient = new Confluent.Kafka.AdminClientBuilder(adminConfig).Build();
+        // Create admin client
+        using var adminClient = new AdminClientBuilder(adminConfig).Build();
 
         try
         {
-            // First, check if the topic exists
-            var metadata = adminClient.GetMetadata(topicDescriptor.Name, TimeSpan.FromSeconds(10));
+            // Get metadata to check if topic exists
+            var metadata = adminClient.GetMetadata(
+                topicDescriptor.Name,
+                TimeSpan.FromSeconds(_options.ConnectionTimeoutSeconds));
+
             var topicExists = metadata.Topics.Any(t => t.Topic == topicDescriptor.Name);
 
             if (!topicExists)
             {
-                // Create the topic
-                await adminClient.CreateTopicsAsync(new TopicSpecification[]
+                // Create topic specification
+                var topicSpec = new TopicSpecification
                 {
-                    new TopicSpecification
-                    {
-                        Name = topicDescriptor.Name,
-                        NumPartitions = topicDescriptor.PartitionCount,
-                        ReplicationFactor = (short)topicDescriptor.ReplicationFactor
-                    }
-                });
+                    Name = topicDescriptor.Name,
+                    NumPartitions = topicDescriptor.PartitionCount,
+                    ReplicationFactor = (short)topicDescriptor.ReplicationFactor
+                };
 
+                // Create the topic
+                await adminClient.CreateTopicsAsync(new[] { topicSpec });
                 Console.WriteLine($"Created topic: {topicDescriptor.Name}");
             }
             else
@@ -118,7 +128,7 @@ internal class KsqlDatabase : IKsqlDatabase, IDisposable, IAsyncDisposable
                 Console.WriteLine($"Topic already exists: {topicDescriptor.Name}");
             }
         }
-        catch (Confluent.Kafka.KafkaException ex)
+        catch (KafkaException ex)
         {
             Console.WriteLine($"Error creating topic: {ex.Message}");
             throw;
@@ -127,11 +137,29 @@ internal class KsqlDatabase : IKsqlDatabase, IDisposable, IAsyncDisposable
 
     private string ExtractBootstrapServers(string connectionString)
     {
-        // In a real implementation, this would parse the connection string
-        // For now, we assume the connection string is the bootstrap servers
+        if (string.IsNullOrEmpty(connectionString))
+            return string.Empty;
+
+        // If it's a mock URL, extract the host and port
+        if (connectionString.StartsWith("mock://", StringComparison.OrdinalIgnoreCase))
+        {
+            return connectionString.Substring(7);
+        }
+
+        // If it starts with http:// or https://, remove the protocol
+        if (connectionString.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+        {
+            return connectionString.Substring(7);
+        }
+
+        if (connectionString.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            return connectionString.Substring(8);
+        }
+
+        // Otherwise return as is
         return connectionString;
     }
-
     /// <summary>
     /// Ensures that a stream exists for the specified topic descriptor.
     /// </summary>
