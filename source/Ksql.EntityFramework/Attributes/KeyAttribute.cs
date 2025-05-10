@@ -1,9 +1,11 @@
 namespace Ksql.EntityFramework.Attributes;
 
-/// <summary>
-/// Specifies that a property represents a primary key for a Kafka topic.
-/// </summary>
 [AttributeUsage(AttributeTargets.Property)]
 public class KeyAttribute : Attribute
 {
+    /// <summary>
+    /// Gets or sets the order of the key in a composite key.
+    /// Lower values have higher priority. Default is 0.
+    /// </summary>
+    public int Order { get; set; } = 0;
 }

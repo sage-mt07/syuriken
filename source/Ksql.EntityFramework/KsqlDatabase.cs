@@ -224,9 +224,10 @@ internal class KsqlDatabase : IKsqlDatabase, IDisposable, IAsyncDisposable
   KAFKA_TOPIC = '{topicDescriptor.Name}',
   VALUE_FORMAT = '{valueFormat}'";
 
-        if (topicDescriptor.KeyColumn != null)
+        // 複合キーの処理
+        if (topicDescriptor.KeyColumns.Count > 0)
         {
-            ksql += $",  KEY = '{topicDescriptor.KeyColumn}'";
+            ksql += $",  KEY = '{string.Join("', '", topicDescriptor.KeyColumns)}'";
         }
 
         if (topicDescriptor.TimestampColumn != null)
@@ -255,14 +256,16 @@ internal class KsqlDatabase : IKsqlDatabase, IDisposable, IAsyncDisposable
   KAFKA_TOPIC = '{options.TopicName ?? topicDescriptor.Name}',
   VALUE_FORMAT = '{valueFormat}'";
 
-        if (options.KeyColumns.Count > 0)
+        // 複合キーの処理
+        var keyColumnsList = options.KeyColumns.Count > 0
+            ? options.KeyColumns
+            : topicDescriptor.KeyColumns;
+
+        if (keyColumnsList.Count > 0)
         {
-            ksql += $",  KEY = '{string.Join("', '", options.KeyColumns)}'";
+            ksql += $",  KEY = '{string.Join("', '", keyColumnsList)}'";
         }
-        else if (topicDescriptor.KeyColumn != null)
-        {
-            ksql += $",  KEY = '{topicDescriptor.KeyColumn}'";
-        }
+
 
         if (options.TimestampColumn != null)
         {

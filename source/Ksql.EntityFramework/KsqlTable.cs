@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using Ksql.EntityFramework.Configuration;
 using Ksql.EntityFramework.Interfaces;
 using Ksql.EntityFramework.Models;
@@ -144,22 +146,11 @@ public class KsqlTable<T> : IKsqlTable<T> where T : class
         }
     }
 
-    private object GetEntityKey(T entity)
+    private string GetEntityKey(T entity)
     {
-        // Find properties with [Key] attribute and get their values
-        var keyProperties = typeof(T).GetProperties()
-            .Where(p => p.GetCustomAttributes(typeof(Attributes.KeyAttribute), true).Any());
+        if (entity == null) throw new ArgumentNullException(nameof(entity));
 
-        foreach (var prop in keyProperties)
-        {
-            var value = prop.GetValue(entity);
-            if (value != null)
-            {
-                return value;
-            }
-        }
-
-        return null;
+        return _schemaManager.CreateKeyString(entity);
     }
 
     /// <summary>
@@ -430,5 +421,105 @@ public class KsqlTable<T> : IKsqlTable<T> where T : class
         }
 
         throw new ArgumentException("The expression must be a property selector.", nameof(propertySelector));
+    }
+}
+// JOIN拡張ヘルパー
+public static class JoinExtensions
+{
+    /// <summary>
+    /// Creates a join condition for properties with matching names in both tables.
+    /// </summary>
+    public static string CreateJoinCondition(string leftTableName, string rightTableName, IEnumerable<string> keyProperties)
+    {
+        if (keyProperties == null) throw new ArgumentNullException(nameof(keyProperties));
+
+        var conditions = keyProperties.Select(prop =>
+            $"{leftTableName}.{prop} = {rightTableName}.{prop}");
+
+        return string.Join(" AND ", conditions);
+    }
+
+    /// <summary>
+    /// Creates a join condition from key selectors.
+    /// </summary>
+    public static string CreateJoinCondition<TLeft, TRight, TKey>(
+        string leftTableName,
+        string rightTableName,
+        Expression<Func<TLeft, TKey>> leftKeySelector,
+        Expression<Func<TRight, TKey>> rightKeySelector)
+    {
+        if (leftKeySelector == null) throw new ArgumentNullException(nameof(leftKeySelector));
+        if (rightKeySelector == null) throw new ArgumentNullException(nameof(rightKeySelector));
+
+        // アノニマス型を使った複合キーの場合
+        if (typeof(TKey).IsAnonymousType())
+        {
+            var leftProperties = ExtractAnonymousProperties(leftKeySelector);
+            var rightProperties = ExtractAnonymousProperties(rightKeySelector);
+
+            if (leftProperties.Count != rightProperties.Count)
+                throw new InvalidOperationException("Key property count mismatch for join operation.");
+
+            var conditions = new List<string>();
+            for (int i = 0; i < leftProperties.Count; i++)
+            {
+                conditions.Add($"{leftTableName}.{leftProperties[i]} = {rightTableName}.{rightProperties[i]}");
+            }
+
+            return string.Join(" AND ", conditions);
+        }
+        else
+        {
+            // 単一キーの場合
+            string leftKeyProperty = ExtractPropertyName(leftKeySelector);
+            string rightKeyProperty = ExtractPropertyName(rightKeySelector);
+            return $"{leftTableName}.{leftKeyProperty} = {rightTableName}.{rightKeyProperty}";
+        }
+    }
+
+    // アノニマス型のプロパティ名を抽出するヘルパーメソッド
+    private static List<string> ExtractAnonymousProperties<T, TKey>(Expression<Func<T, TKey>> keySelector)
+    {
+        if (keySelector.Body is NewExpression newExpression)
+        {
+            var properties = new List<string>();
+
+            for (int i = 0; i < newExpression.Arguments.Count; i++)
+            {
+                if (newExpression.Arguments[i] is MemberExpression memberExpression)
+                {
+                    properties.Add(memberExpression.Member.Name);
+                }
+                else
+                {
+                    throw new ArgumentException($"Unsupported expression in composite key: {newExpression.Arguments[i]}");
+                }
+            }
+
+            return properties;
+        }
+
+        throw new ArgumentException("Expected an anonymous type creation expression", nameof(keySelector));
+    }
+
+    // プロパティ名を抽出するヘルパーメソッド
+    private static string ExtractPropertyName<T, TProperty>(Expression<Func<T, TProperty>> propertySelector)
+    {
+        if (propertySelector.Body is MemberExpression memberExpression)
+        {
+            return memberExpression.Member.Name;
+        }
+
+        throw new ArgumentException("The expression must be a property selector.", nameof(propertySelector));
+    }
+
+    // アノニマス型かどうかを判定するヘルパーメソッド
+    private static bool IsAnonymousType(this Type type)
+    {
+        return Attribute.IsDefined(type, typeof(CompilerGeneratedAttribute), false)
+            && type.IsGenericType
+            && type.Name.Contains("AnonymousType")
+            && (type.Name.StartsWith("<>") || type.Name.StartsWith("VB$"))
+            && type.Attributes.HasFlag(TypeAttributes.NotPublic);
     }
 }

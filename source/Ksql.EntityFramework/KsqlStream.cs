@@ -68,7 +68,9 @@ public class KsqlStream<T> : IKsqlStream<T> where T : class
     /// <returns>A task representing the asynchronous operation, with the result indicating the offset of the produced record.</returns>
     public async Task<long> ProduceAsync(T entity)
     {
-        // Generate a key if the entity has a key attribute
+        if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+        // 複合キーを含む可能性のあるキーを取得
         string key = GetEntityKey(entity) ?? Guid.NewGuid().ToString();
 
         using var producer = GetProducer();
@@ -269,7 +271,7 @@ public class KsqlStream<T> : IKsqlStream<T> where T : class
 
         return subscription;
     }
-    
+
     /// <summary>
     /// Joins this stream with another stream within a specified window.
     /// </summary>

@@ -38,7 +38,52 @@ public class SchemaManager
 
         return descriptor;
     }
+    /// <summary>
+    /// Gets the key properties for the specified entity type.
+    /// </summary>
+    /// <param name="entityType">The entity type.</param>
+    /// <returns>A list of key properties, ordered by key order.</returns>
+    public IReadOnlyList<PropertyInfo> GetKeyProperties(Type entityType)
+    {
+        // Key属性を持つプロパティを取得し、Orderでソート
+        return entityType.GetProperties()
+            .Where(p => p.GetCustomAttribute<KeyAttribute>() != null)
+            .OrderBy(p => p.GetCustomAttribute<KeyAttribute>().Order)
+            .ToList();
+    }
+    /// <summary>
+    /// Gets the key property names for the specified entity type.
+    /// </summary>
+    /// <param name="entityType">The entity type.</param>
+    /// <returns>An array of key property names.</returns>
+    public string[] GetKeyPropertyNames(Type entityType)
+    {
+        return GetKeyProperties(entityType).Select(p => p.Name).ToArray();
+    }
+    /// <summary>
+    /// Creates a key string from entity properties.
+    /// </summary>
+    /// <param name="entity">The entity.</param>
+    /// <returns>A composite key string.</returns>
+    public string CreateKeyString<T>(T entity) where T : class
+    {
+        if (entity == null) throw new ArgumentNullException(nameof(entity));
 
+        var keyProperties = GetKeyProperties(typeof(T));
+        if (keyProperties.Count == 0)
+            throw new InvalidOperationException($"No key properties found for type '{typeof(T).Name}'.");
+
+        // 単一キーの場合は単純な文字列として返す
+        if (keyProperties.Count == 1)
+        {
+            var value = keyProperties[0].GetValue(entity);
+            return value?.ToString() ?? string.Empty;
+        }
+
+        // 複合キーの場合はキー部分をJOINして返す
+        var keyParts = keyProperties.Select(p => p.GetValue(entity)?.ToString() ?? string.Empty);
+        return string.Join("|", keyParts);
+    }
     /// <summary>
     /// Gets a schema string for the specified entity type.
     /// </summary>
@@ -65,18 +110,15 @@ public class SchemaManager
         var partitionCount = topicAttribute?.PartitionCount ?? _options.DefaultPartitionCount;
         var replicationFactor = topicAttribute?.ReplicationFactor ?? _options.DefaultReplicationFactor;
 
-        string? keyColumn = null;
+        // 複合キーを含む可能性のあるキー列を取得
+        var keyColumns = GetKeyPropertyNames(entityType);
+
         string? timestampColumn = null;
         string? timestampFormat = null;
 
         var properties = entityType.GetProperties();
         foreach (var property in properties)
         {
-            if (property.GetCustomAttribute<KeyAttribute>() != null)
-            {
-                keyColumn = property.Name;
-            }
-
             var timestampAttribute = property.GetCustomAttribute<TimestampAttribute>();
             if (timestampAttribute != null)
             {
@@ -91,7 +133,7 @@ public class SchemaManager
             EntityType = entityType,
             PartitionCount = partitionCount,
             ReplicationFactor = replicationFactor,
-            KeyColumn = keyColumn,
+            KeyColumns = keyColumns.ToList(),
             TimestampColumn = timestampColumn,
             TimestampFormat = timestampFormat,
             ValueFormat = _options.DefaultValueFormat

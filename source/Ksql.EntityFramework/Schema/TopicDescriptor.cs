@@ -46,4 +46,8 @@ public class TopicDescriptor
     /// Gets or sets the format for values in the topic.
     /// </summary>
     public ValueFormat ValueFormat { get; set; } = ValueFormat.Avro;
+    /// <summary>
+    /// Gets or sets the key columns for the topic.
+    /// </summary>
+    public List<string> KeyColumns { get; set; } = new List<string>();
 }
