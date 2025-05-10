@@ -1,33 +1,32 @@
-namespace Ksql.EntityFramework.Models
+namespace Ksql.EntityFramework.Models;
+
+/// <summary>
+/// Specifies the serialization format for values in a Kafka topic.
+/// </summary>
+public enum ValueFormat
 {
     /// <summary>
-    /// Specifies the serialization format for values in a Kafka topic.
+    /// Avro binary format with schema registry support.
     /// </summary>
-    public enum ValueFormat
-    {       
-        /// <summary>
-        /// Avro binary format with schema registry support.
-        /// </summary>
-        Avro,
+    Avro,
 
-        /// <summary>
-        /// JSON format.
-        /// </summary>
-        Json,
+    /// <summary>
+    /// JSON format.
+    /// </summary>
+    Json,
 
-        /// <summary>
-        /// Protobuf binary format.
-        /// </summary>
-        Protobuf,
+    /// <summary>
+    /// Protobuf binary format.
+    /// </summary>
+    Protobuf,
 
-        /// <summary>
-        /// CSV format.
-        /// </summary>
-        Csv,
+    /// <summary>
+    /// CSV format.
+    /// </summary>
+    Csv,
 
-        /// <summary>
-        /// Delimited text format.
-        /// </summary>
-        Delimited
-    }
+    /// <summary>
+    /// Delimited text format.
+    /// </summary>
+    Delimited
 }

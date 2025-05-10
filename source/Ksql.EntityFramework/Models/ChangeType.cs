@@ -1,23 +1,22 @@
-namespace Ksql.EntityFramework.Models
+namespace Ksql.EntityFramework.Models;
+
+/// <summary>
+/// Specifies the type of change for a record in a stream or table.
+/// </summary>
+public enum ChangeType
 {
     /// <summary>
-    /// Specifies the type of change for a record in a stream or table.
+    /// A new record was inserted.
     /// </summary>
-    public enum ChangeType
-    {
-        /// <summary>
-        /// A new record was inserted.
-        /// </summary>
-        Insert,
+    Insert,
 
-        /// <summary>
-        /// An existing record was updated.
-        /// </summary>
-        Update,
+    /// <summary>
+    /// An existing record was updated.
+    /// </summary>
+    Update,
 
-        /// <summary>
-        /// An existing record was deleted.
-        /// </summary>
-        Delete
-    }
+    /// <summary>
+    /// An existing record was deleted.
+    /// </summary>
+    Delete
 }
