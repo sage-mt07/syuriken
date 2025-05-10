@@ -86,8 +86,7 @@
               "RelativeToolTip": "source\\Ksql.EntityFramework\\KsqlJoinTable.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-10T10:44:53.69Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-10T10:44:53.69Z"
             },
             {
               "$type": "Document",
@@ -99,8 +98,7 @@
               "RelativeToolTip": "source\\Ksql.EntityFramework\\KsqlJoinStream.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAqwBUAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-10T10:35:05.681Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-10T10:35:05.681Z"
             },
             {
               "$type": "Document",
@@ -112,8 +110,7 @@
               "RelativeToolTip": "source\\Ksql.EntityFramework\\Models\\Join.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAF4AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-10T10:30:40.513Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-10T10:30:40.513Z"
             },
             {
               "$type": "Document",
@@ -125,8 +122,7 @@
               "RelativeToolTip": "source\\Ksql.EntityFramework\\Interfaces\\IKsqlStream.cs",
               "ViewState": "AgIAABMAAAAAAAAAAAAAwCIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-10T10:28:40.023Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-10T10:28:40.023Z"
             },
             {
               "$type": "Document",
@@ -138,8 +134,7 @@
               "RelativeToolTip": "source\\Ksql.EntityFramework.Tests\\KsqlDbContextTests.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAH0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-10T10:25:32.787Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-10T10:25:32.787Z"
             },
             {
               "$type": "Document",
@@ -151,8 +146,7 @@
               "RelativeToolTip": "source\\Ksql.EntityFramework\\KsqlDatabase.cs",
               "ViewState": "AgIAAG8AAAAAAAAAAAAowGAAAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-10T10:21:22.384Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-10T10:21:22.384Z"
             },
             {
               "$type": "Document",
@@ -188,8 +182,7 @@
               "RelativeToolTip": "source\\Ksql.EntityFramework\\KsqlTable.cs",
               "ViewState": "AgIAADQBAAAAAAAAAAAmwLABAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-10T10:15:46.585Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-10T10:15:46.585Z"
             },
             {
               "$type": "Document",
@@ -197,8 +190,8 @@
               "Title": "KsqlStream.cs",
               "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlStream.cs",
               "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\KsqlStream.cs",
-              "ToolTip": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlStream.cs*",
-              "RelativeToolTip": "source\\Ksql.EntityFramework\\KsqlStream.cs*",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlStream.cs",
+              "RelativeToolTip": "source\\Ksql.EntityFramework\\KsqlStream.cs",
               "ViewState": "AgIAAOwAAAAAAAAAAAAqwA8BAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-10T10:15:34.224Z",
@@ -250,8 +243,7 @@
               "RelativeToolTip": "source\\Ksql.EntityFramework.Tests\\Helpers\\TestHelper.cs",
               "ViewState": "AgIAABAAAAAAAAAAAAAAwGIAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-10T10:07:36.538Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-10T10:07:36.538Z"
             },
             {
               "$type": "Document",

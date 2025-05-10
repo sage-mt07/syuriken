@@ -213,4 +213,240 @@ public class KsqlStream<T> : IKsqlStream<T> where T : class
     {
         return GetEnumerator();
     }
+    /// <summary>
+    /// Subscribes to the stream and receives entities as they are produced.
+    /// </summary>
+    /// <param name="onNext">The action to invoke when a new entity is produced.</param>
+    /// <param name="onError">The action to invoke when an error occurs.</param>
+    /// <param name="onCompleted">The action to invoke when the subscription is completed.</param>
+    /// <param name="cancellationToken">A token to cancel the subscription.</param>
+    /// <returns>A subscription that can be used to cancel the subscription.</returns>
+    public IDisposable Subscribe(
+        Action<T> onNext,
+        Action<Exception>? onError = null,
+        Action? onCompleted = null,
+        CancellationToken cancellationToken = default)
+    {
+        if (onNext == null) throw new ArgumentNullException(nameof(onNext));
+
+        // Create a subscription that processes entities as they are produced
+        var subscription = new KsqlSubscription<T>(
+            async () =>
+            {
+                try
+                {
+                     foreach (var entity in Subscribe())
+                    {
+                        try
+                        {
+                            onNext(entity);
+                        }
+                        catch (Exception ex)
+                        {
+                            onError?.Invoke(ex);
+                            if (_errorAction == Models.ErrorAction.Stop)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    onCompleted?.Invoke();
+                }
+                catch (OperationCanceledException)
+                {
+                    // Subscription was canceled - this is expected
+                    onCompleted?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    onError?.Invoke(ex);
+                }
+            });
+
+        // Start the subscription
+        subscription.Start();
+
+        return subscription;
+    }
+    
+    /// <summary>
+    /// Joins this stream with another stream within a specified window.
+    /// </summary>
+    /// <typeparam name="TRight">The type of entity in the right stream.</typeparam>
+    /// <typeparam name="TKey">The type of the join key.</typeparam>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <param name="rightStream">The right stream to join with.</param>
+    /// <param name="leftKeySelector">A function to extract the join key from this stream's elements.</param>
+    /// <param name="rightKeySelector">A function to extract the join key from the right stream's elements.</param>
+    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
+    /// <param name="window">The window specification for the join.</param>
+    /// <returns>A stream containing the joined elements.</returns>
+    public IKsqlStream<TResult> Join<TRight, TKey, TResult>(
+        IKsqlStream<TRight> rightStream,
+        Expression<Func<T, TKey>> leftKeySelector,
+        Expression<Func<TRight, TKey>> rightKeySelector,
+        Expression<Func<T, TRight, TResult>> resultSelector,
+        WindowSpecification window)
+        where TRight : class
+        where TResult : class
+    {
+        if (rightStream == null) throw new ArgumentNullException(nameof(rightStream));
+        if (leftKeySelector == null) throw new ArgumentNullException(nameof(leftKeySelector));
+        if (rightKeySelector == null) throw new ArgumentNullException(nameof(rightKeySelector));
+        if (resultSelector == null) throw new ArgumentNullException(nameof(resultSelector));
+        if (window == null) throw new ArgumentNullException(nameof(window));
+
+        // Extract property names from key selectors
+        string leftKeyProperty = ExtractPropertyName(leftKeySelector);
+        string rightKeyProperty = ExtractPropertyName(rightKeySelector);
+
+        // Create a unique name for the result stream
+        string resultStreamName = $"{Name}_{((KsqlStream<TRight>)rightStream).Name}_join_{Guid.NewGuid():N}";
+
+        // Create the join condition
+        string joinCondition = $"{Name}.{leftKeyProperty} = {((KsqlStream<TRight>)rightStream).Name}.{rightKeyProperty}";
+
+        // Create the join operation
+        var joinOperation = new JoinOperation(
+            JoinType.Inner,
+            Name,
+            ((KsqlStream<TRight>)rightStream).Name,
+            joinCondition,
+            window.ToKsqlString());
+
+        // Create a new stream for the join result
+        // In a real implementation, this would execute the KSQL statement to create the join
+        var resultStream = new KsqlJoinStream<T, TRight, TResult>(
+            resultStreamName,
+            _context,
+            _schemaManager,
+            this,
+            (KsqlStream<TRight>)rightStream,
+            joinOperation,
+            resultSelector);
+
+        return resultStream;
+    }
+
+    /// <summary>
+    /// Joins this stream with a table.
+    /// </summary>
+    /// <typeparam name="TRight">The type of entity in the table.</typeparam>
+    /// <typeparam name="TKey">The type of the join key.</typeparam>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <param name="table">The table to join with.</param>
+    /// <param name="leftKeySelector">A function to extract the join key from this stream's elements.</param>
+    /// <param name="rightKeySelector">A function to extract the join key from the table's elements.</param>
+    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
+    /// <returns>A stream containing the joined elements.</returns>
+    public IKsqlStream<TResult> Join<TRight, TKey, TResult>(
+        IKsqlTable<TRight> table,
+        Expression<Func<T, TKey>> leftKeySelector,
+        Expression<Func<TRight, TKey>> rightKeySelector,
+        Expression<Func<T, TRight, TResult>> resultSelector)
+        where TRight : class
+        where TResult : class
+    {
+        if (table == null) throw new ArgumentNullException(nameof(table));
+        if (leftKeySelector == null) throw new ArgumentNullException(nameof(leftKeySelector));
+        if (rightKeySelector == null) throw new ArgumentNullException(nameof(rightKeySelector));
+        if (resultSelector == null) throw new ArgumentNullException(nameof(resultSelector));
+
+        // Extract property names from key selectors
+        string leftKeyProperty = ExtractPropertyName(leftKeySelector);
+        string rightKeyProperty = ExtractPropertyName(rightKeySelector);
+
+        // Create a unique name for the result stream
+        string resultStreamName = $"{Name}_{((KsqlTable<TRight>)table).Name}_join_{Guid.NewGuid():N}";
+
+        // Create the join condition
+        string joinCondition = $"{Name}.{leftKeyProperty} = {((KsqlTable<TRight>)table).Name}.{rightKeyProperty}";
+
+        // Create the join operation
+        var joinOperation = new JoinOperation(
+            JoinType.Inner,
+            Name,
+            ((KsqlTable<TRight>)table).Name,
+            joinCondition);
+
+        // Create a new stream for the join result
+        // In a real implementation, this would execute the KSQL statement to create the join
+        var resultStream = new KsqlJoinStream<T, TRight, TResult>(
+            resultStreamName,
+            _context,
+            _schemaManager,
+            this,
+            table,
+            joinOperation,
+            resultSelector);
+
+        return resultStream;
+    }
+
+    /// <summary>
+    /// Left joins this stream with a table.
+    /// </summary>
+    /// <typeparam name="TRight">The type of entity in the table.</typeparam>
+    /// <typeparam name="TKey">The type of the join key.</typeparam>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <param name="table">The table to join with.</param>
+    /// <param name="leftKeySelector">A function to extract the join key from this stream's elements.</param>
+    /// <param name="rightKeySelector">A function to extract the join key from the table's elements.</param>
+    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
+    /// <returns>A stream containing the joined elements.</returns>
+    public IKsqlStream<TResult> LeftJoin<TRight, TKey, TResult>(
+        IKsqlTable<TRight> table,
+        Expression<Func<T, TKey>> leftKeySelector,
+        Expression<Func<TRight, TKey>> rightKeySelector,
+        Expression<Func<T, TRight, TResult>> resultSelector)
+        where TRight : class
+        where TResult : class
+    {
+        if (table == null) throw new ArgumentNullException(nameof(table));
+        if (leftKeySelector == null) throw new ArgumentNullException(nameof(leftKeySelector));
+        if (rightKeySelector == null) throw new ArgumentNullException(nameof(rightKeySelector));
+        if (resultSelector == null) throw new ArgumentNullException(nameof(resultSelector));
+
+        // Extract property names from key selectors
+        string leftKeyProperty = ExtractPropertyName(leftKeySelector);
+        string rightKeyProperty = ExtractPropertyName(rightKeySelector);
+
+        // Create a unique name for the result stream
+        string resultStreamName = $"{Name}_{((KsqlTable<TRight>)table).Name}_leftjoin_{Guid.NewGuid():N}";
+
+        // Create the join condition
+        string joinCondition = $"{Name}.{leftKeyProperty} = {((KsqlTable<TRight>)table).Name}.{rightKeyProperty}";
+
+        // Create the join operation
+        var joinOperation = new JoinOperation(
+            JoinType.Left,
+            Name,
+            ((KsqlTable<TRight>)table).Name,
+            joinCondition);
+
+        // Create a new stream for the join result
+        // In a real implementation, this would execute the KSQL statement to create the join
+        var resultStream = new KsqlJoinStream<T, TRight, TResult>(
+            resultStreamName,
+            _context,
+            _schemaManager,
+            this,
+            table,
+            joinOperation,
+            resultSelector);
+
+        return resultStream;
+    }
+
+    private static string ExtractPropertyName<TSource, TProperty>(Expression<Func<TSource, TProperty>> propertySelector)
+    {
+        if (propertySelector.Body is MemberExpression memberExpression)
+        {
+            return memberExpression.Member.Name;
+        }
+
+        throw new ArgumentException("The expression must be a property selector.", nameof(propertySelector));
+    }
+
 }

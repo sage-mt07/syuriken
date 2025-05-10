@@ -7,6 +7,7 @@ using Ksql.EntityFramework.Interfaces;
 using Ksql.EntityFramework.Tests.Context;
 using Ksql.EntityFramework.Tests.Helpers;
 using Ksql.EntityFramework.Tests.Models;
+using Ksql.EntityFramework.Schema;
 
 namespace Ksql.EntityFramework.Tests
 {
@@ -16,7 +17,7 @@ namespace Ksql.EntityFramework.Tests
         public void KsqlDbContext_ShouldInitializeProperties()
         {
             // Arrange & Act
-            using var context = TestHelper.CreateTestContext();
+            using var context = TestHelper.CreateMockContext();
 
             // Assert
             Assert.NotNull(context.Orders);
@@ -33,34 +34,52 @@ namespace Ksql.EntityFramework.Tests
         }
 
         [Fact]
-        public async Task EnsureTopicCreatedAsync_ShouldCreateTopic()
+        public async Task EnsureTopicCreatedAsync_ShouldCallDatabaseEnsureTopicCreatedAsync()
         {
             // Arrange
-            using var context = TestHelper.CreateTestContext();
+            var mockDatabase = new Mock<IKsqlDatabase>();
+            var options = TestHelper.CreateTestOptions();
 
-            // Act & Assert
-            // This is more of an integration test that would require Kafka to be running
-            // In a real unit test, we would mock the dependencies
-            await Assert.ThrowsAnyAsync<Exception>(() => context.EnsureTopicCreatedAsync<TestOrder>());
+            // テスト用のコンテキスト作成（モックデータベースを使用）
+            var context = new TestKsqlDbContextWithMockDb(options, mockDatabase.Object);
+
+            // Act
+            await context.EnsureTopicCreatedAsync<TestOrder>();
+
+            // Assert
+            // データベースのEnsureTopicCreatedAsyncが呼び出されたことを検証
+            // ここではAny<TopicDescriptor>()を使用していますが、より厳密なマッチングを行うことも可能です
+            mockDatabase.Verify(db => db.ExecuteKsqlAsync(It.IsAny<string>()), Times.Once);
         }
 
         [Fact]
-        public async Task EnsureStreamCreatedAsync_ShouldCreateStream()
+        public async Task EnsureStreamCreatedAsync_ShouldCallDatabaseEnsureStreamCreatedAsync()
         {
             // Arrange
-            using var context = TestHelper.CreateTestContext();
+            var mockDatabase = new Mock<IKsqlDatabase>();
+            var options = TestHelper.CreateTestOptions();
 
-            // Act & Assert
-            // This is more of an integration test that would require Kafka and KSQL to be running
-            // In a real unit test, we would mock the dependencies
-            await Assert.ThrowsAnyAsync<Exception>(() => context.EnsureStreamCreatedAsync<TestOrder>());
+            // テスト用のコンテキスト作成（モックデータベースを使用）
+            var context = new TestKsqlDbContextWithMockDb(options, mockDatabase.Object);
+
+            // Act
+            await context.EnsureStreamCreatedAsync<TestOrder>();
+
+            // Assert
+            // データベースのEnsureStreamCreatedAsyncが呼び出されたことを検証
+            mockDatabase.Verify(db => db.ExecuteKsqlAsync(It.IsAny<string>()), Times.Once);
         }
 
         [Fact]
-        public async Task SaveChangesAsync_ShouldSavePendingChanges()
+        public async Task SaveChangesAsync_ShouldProcessAllPendingChanges()
         {
             // Arrange
-            using var context = TestHelper.CreateMockContext();
+            var mockStream = new Mock<IKsqlStream<TestOrder>>();
+            var options = TestHelper.CreateTestOptions();
+
+            // テスト用のコンテキスト作成（モックストリームを使用）
+            var context = new TestKsqlDbContextWithMockStream(options, mockStream.Object);
+
             var order = new TestOrder
             {
                 OrderId = "TEST-001",
@@ -71,9 +90,37 @@ namespace Ksql.EntityFramework.Tests
 
             // Act
             context.Orders.Add(order);
-            // In a real unit test with mocking, we would verify the call to Produce
-            // For now, we just check that it doesn't throw an exception
-            await Assert.ThrowsAnyAsync<Exception>(() => context.SaveChangesAsync());
+            await context.SaveChangesAsync();
+
+            // Assert
+            // ストリームのProduceAsyncが呼び出されたことを検証
+            mockStream.Verify(s => s.ProduceAsync(order), Times.Once);
+        }
+    }
+
+    // テスト用のコンテキストクラス（モックデータベース使用）
+    public class TestKsqlDbContextWithMockDb : TestKsqlDbContext
+    {
+        public new IKsqlDatabase Database { get; }
+
+        public TestKsqlDbContextWithMockDb(KsqlDbContextOptions options, IKsqlDatabase mockDatabase)
+            : base(options)
+        {
+            Database = mockDatabase;
+        }
+    }
+
+    // テスト用のコンテキストクラス（モックストリーム使用）
+    public class TestKsqlDbContextWithMockStream : TestKsqlDbContext
+    {
+        private readonly IKsqlStream<TestOrder> _mockOrderStream;
+
+        public new IKsqlStream<TestOrder> Orders => _mockOrderStream;
+
+        public TestKsqlDbContextWithMockStream(KsqlDbContextOptions options, IKsqlStream<TestOrder> mockOrderStream)
+            : base(options)
+        {
+            _mockOrderStream = mockOrderStream;
         }
     }
 }

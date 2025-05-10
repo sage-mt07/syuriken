@@ -6278,7 +6278,7 @@
       "projectName": "Ksql.EntityFramework.Tests",
       "projectPath": "C:\\Users\\seiji_yfc8940\\Source\\Repos\\syuriken\\source\\Ksql.EntityFramework.Tests\\Ksql.EntityFramework.Tests.csproj",
       "packagesPath": "C:\\Users\\seiji_yfc8940\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\Ksql.EntityFramework.Tests\\obj\\",
+      "outputPath": "C:\\Users\\seiji_yfc8940\\Source\\Repos\\syuriken\\source\\Ksql.EntityFramework.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

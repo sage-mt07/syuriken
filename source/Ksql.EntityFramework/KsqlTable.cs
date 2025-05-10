@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq.Expressions;
 using Ksql.EntityFramework.Configuration;
 using Ksql.EntityFramework.Interfaces;
+using Ksql.EntityFramework.Models;
 using Ksql.EntityFramework.Schema;
 
 namespace Ksql.EntityFramework;
@@ -257,5 +258,177 @@ public class KsqlTable<T> : IKsqlTable<T> where T : class
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+    /// <summary>
+    /// Joins this table with another table.
+    /// </summary>
+    /// <typeparam name="TRight">The type of entity in the right table.</typeparam>
+    /// <typeparam name="TKey">The type of the join key.</typeparam>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <param name="rightTable">The right table to join with.</param>
+    /// <param name="leftKeySelector">A function to extract the join key from this table's elements.</param>
+    /// <param name="rightKeySelector">A function to extract the join key from the right table's elements.</param>
+    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
+    /// <returns>A table containing the joined elements.</returns>
+    public IKsqlTable<TResult> Join<TRight, TKey, TResult>(
+        IKsqlTable<TRight> rightTable,
+        Expression<Func<T, TKey>> leftKeySelector,
+        Expression<Func<TRight, TKey>> rightKeySelector,
+        Expression<Func<T, TRight, TResult>> resultSelector)
+        where TRight : class
+        where TResult : class
+    {
+        if (rightTable == null) throw new ArgumentNullException(nameof(rightTable));
+        if (leftKeySelector == null) throw new ArgumentNullException(nameof(leftKeySelector));
+        if (rightKeySelector == null) throw new ArgumentNullException(nameof(rightKeySelector));
+        if (resultSelector == null) throw new ArgumentNullException(nameof(resultSelector));
+
+        // Extract property names from key selectors
+        string leftKeyProperty = ExtractPropertyName(leftKeySelector);
+        string rightKeyProperty = ExtractPropertyName(rightKeySelector);
+
+        // Create a unique name for the result table
+        string resultTableName = $"{Name}_{((KsqlTable<TRight>)rightTable).Name}_join_{Guid.NewGuid():N}";
+
+        // Create the join condition
+        string joinCondition = $"{Name}.{leftKeyProperty} = {((KsqlTable<TRight>)rightTable).Name}.{rightKeyProperty}";
+
+        // Create the join operation
+        var joinOperation = new JoinOperation(
+            JoinType.Inner,
+            Name,
+            ((KsqlTable<TRight>)rightTable).Name,
+            joinCondition);
+
+        // Create a new table for the join result
+        // In a real implementation, this would execute the KSQL statement to create the join
+        var resultTable = new KsqlJoinTable<T, TRight, TResult>(
+            resultTableName,
+            _context,
+            _schemaManager,
+            this,
+            (KsqlTable<TRight>)rightTable,
+            joinOperation,
+            resultSelector);
+
+        return resultTable;
+    }
+
+    /// <summary>
+    /// Left joins this table with another table.
+    /// </summary>
+    /// <typeparam name="TRight">The type of entity in the right table.</typeparam>
+    /// <typeparam name="TKey">The type of the join key.</typeparam>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <param name="rightTable">The right table to join with.</param>
+    /// <param name="leftKeySelector">A function to extract the join key from this table's elements.</param>
+    /// <param name="rightKeySelector">A function to extract the join key from the right table's elements.</param>
+    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
+    /// <returns>A table containing the joined elements.</returns>
+    public IKsqlTable<TResult> LeftJoin<TRight, TKey, TResult>(
+        IKsqlTable<TRight> rightTable,
+        Expression<Func<T, TKey>> leftKeySelector,
+        Expression<Func<TRight, TKey>> rightKeySelector,
+        Expression<Func<T, TRight, TResult>> resultSelector)
+        where TRight : class
+        where TResult : class
+    {
+        if (rightTable == null) throw new ArgumentNullException(nameof(rightTable));
+        if (leftKeySelector == null) throw new ArgumentNullException(nameof(leftKeySelector));
+        if (rightKeySelector == null) throw new ArgumentNullException(nameof(rightKeySelector));
+        if (resultSelector == null) throw new ArgumentNullException(nameof(resultSelector));
+
+        // Extract property names from key selectors
+        string leftKeyProperty = ExtractPropertyName(leftKeySelector);
+        string rightKeyProperty = ExtractPropertyName(rightKeySelector);
+
+        // Create a unique name for the result table
+        string resultTableName = $"{Name}_{((KsqlTable<TRight>)rightTable).Name}_leftjoin_{Guid.NewGuid():N}";
+
+        // Create the join condition
+        string joinCondition = $"{Name}.{leftKeyProperty} = {((KsqlTable<TRight>)rightTable).Name}.{rightKeyProperty}";
+
+        // Create the join operation
+        var joinOperation = new JoinOperation(
+            JoinType.Left,
+            Name,
+            ((KsqlTable<TRight>)rightTable).Name,
+            joinCondition);
+
+        // Create a new table for the join result
+        var resultTable = new KsqlJoinTable<T, TRight, TResult>(
+            resultTableName,
+            _context,
+            _schemaManager,
+            this,
+            (KsqlTable<TRight>)rightTable,
+            joinOperation,
+            resultSelector);
+
+        return resultTable;
+    }
+
+    /// <summary>
+    /// Full outer joins this table with another table.
+    /// </summary>
+    /// <typeparam name="TRight">The type of entity in the right table.</typeparam>
+    /// <typeparam name="TKey">The type of the join key.</typeparam>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <param name="rightTable">The right table to join with.</param>
+    /// <param name="leftKeySelector">A function to extract the join key from this table's elements.</param>
+    /// <param name="rightKeySelector">A function to extract the join key from the right table's elements.</param>
+    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
+    /// <returns>A table containing the joined elements.</returns>
+    public IKsqlTable<TResult> FullOuterJoin<TRight, TKey, TResult>(
+        IKsqlTable<TRight> rightTable,
+        Expression<Func<T, TKey>> leftKeySelector,
+        Expression<Func<TRight, TKey>> rightKeySelector,
+        Expression<Func<T, TRight, TResult>> resultSelector)
+        where TRight : class
+        where TResult : class
+    {
+        if (rightTable == null) throw new ArgumentNullException(nameof(rightTable));
+        if (leftKeySelector == null) throw new ArgumentNullException(nameof(leftKeySelector));
+        if (rightKeySelector == null) throw new ArgumentNullException(nameof(rightKeySelector));
+        if (resultSelector == null) throw new ArgumentNullException(nameof(resultSelector));
+
+        // Extract property names from key selectors
+        string leftKeyProperty = ExtractPropertyName(leftKeySelector);
+        string rightKeyProperty = ExtractPropertyName(rightKeySelector);
+
+        // Create a unique name for the result table
+        string resultTableName = $"{Name}_{((KsqlTable<TRight>)rightTable).Name}_fullouterjoin_{Guid.NewGuid():N}";
+
+        // Create the join condition
+        string joinCondition = $"{Name}.{leftKeyProperty} = {((KsqlTable<TRight>)rightTable).Name}.{rightKeyProperty}";
+
+        // Create the join operation
+        var joinOperation = new JoinOperation(
+            JoinType.FullOuter,
+            Name,
+            ((KsqlTable<TRight>)rightTable).Name,
+            joinCondition);
+
+        // Create a new table for the join result
+        var resultTable = new KsqlJoinTable<T, TRight, TResult>(
+            resultTableName,
+            _context,
+            _schemaManager,
+            this,
+            (KsqlTable<TRight>)rightTable,
+            joinOperation,
+            resultSelector);
+
+        return resultTable;
+    }
+
+    private static string ExtractPropertyName<TSource, TProperty>(Expression<Func<TSource, TProperty>> propertySelector)
+    {
+        if (propertySelector.Body is MemberExpression memberExpression)
+        {
+            return memberExpression.Member.Name;
+        }
+
+        throw new ArgumentException("The expression must be a property selector.", nameof(propertySelector));
     }
 }
