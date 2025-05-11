@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Ksql.EntityFramework")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+876ebcf47b16cc6e9a09dae4ff151536ca1dbe63")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7b73589a109a38c6383135cf41bac992e618a5a0")]
 [assembly: System.Reflection.AssemblyProductAttribute("Ksql.EntityFramework")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Ksql.EntityFramework")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -62,6 +62,14 @@
             "Confluent.SchemaRegistry.Serdes.Avro": {
               "target": "Package",
               "version": "[2.3.0, )"
+            },
+            "Microsoft.Extensions.Http": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "Microsoft.Extensions.Logging": {
+              "target": "Package",
+              "version": "[8.0.1, )"
             }
           },
           "imports": [
