@@ -1,26 +1,70 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\",
+  "WorkspaceRootPath": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\ksql.entityframework\\ksqltable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\models\\errorpolicy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\models\\errorpolicy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\models\\join.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\models\\join.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\models\\valueformat.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\models\\valueformat.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\schema\\schemamanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\schema\\schemamanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\schema\\tabledescriptor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\schema\\tabledescriptor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\schema\\topicdescriptor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\schema\\topicdescriptor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\utils\\propertyhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\utils\\propertyhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\windows\\tumblingwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\windows\\tumblingwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\windows\\windowedksqlstream.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\windows\\windowedksqlstream.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\windows\\windowspecification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\windows\\windowspecification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\ksqlquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\ksqlquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\ksqlqueryprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\ksqlqueryprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\ksqltable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\ksqltable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\ksql.entityframework\\ksqlstream.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\ksqlstream.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\ksqltransaction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\ksqltransaction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\ksql.entityframework\\ksqldbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\ksqldbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\ksql.entityframework\\kafka\\kafkaconsumer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\kafka\\kafkaconsumer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\ksql.entityframework\\ksqldatabase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\ksqldatabase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\ksqldatabase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|c:\\users\\seiji_yfc8940\\repos\\syuriken\\source\\ksql.entityframework\\kafka\\kafkaconsumer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12B00FCD-A006-4F06-8595-358B01BCCA87}|source\\Ksql.EntityFramework\\Ksql.EntityFramework.csproj|solutionrelative:source\\ksql.entityframework\\kafka\\kafkaconsumer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -35,67 +79,208 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "ErrorPolicy.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Models\\ErrorPolicy.cs",
+              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\Models\\ErrorPolicy.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Models\\ErrorPolicy.cs",
+              "RelativeToolTip": "source\\Ksql.EntityFramework\\Models\\ErrorPolicy.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T09:33:22.161Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Join.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Models\\Join.cs",
+              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\Models\\Join.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Models\\Join.cs",
+              "RelativeToolTip": "source\\Ksql.EntityFramework\\Models\\Join.cs",
+              "ViewState": "AgIAACEAAAAAAAAAAAA2wDoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T09:32:26.389Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ValueFormat.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Models\\ValueFormat.cs",
+              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\Models\\ValueFormat.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Models\\ValueFormat.cs",
+              "RelativeToolTip": "source\\Ksql.EntityFramework\\Models\\ValueFormat.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T09:30:04.767Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "SchemaManager.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Schema\\SchemaManager.cs",
+              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\Schema\\SchemaManager.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Schema\\SchemaManager.cs",
+              "RelativeToolTip": "source\\Ksql.EntityFramework\\Schema\\SchemaManager.cs",
+              "ViewState": "AgIAAGQAAAAAAAAAAAAgwDsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T09:27:16.163Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "TableDescriptor.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Schema\\TableDescriptor.cs",
+              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\Schema\\TableDescriptor.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Schema\\TableDescriptor.cs",
+              "RelativeToolTip": "source\\Ksql.EntityFramework\\Schema\\TableDescriptor.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T09:27:03.395Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "TopicDescriptor.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Schema\\TopicDescriptor.cs",
+              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\Schema\\TopicDescriptor.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Schema\\TopicDescriptor.cs",
+              "RelativeToolTip": "source\\Ksql.EntityFramework\\Schema\\TopicDescriptor.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T09:26:31.448Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "PropertyHelper.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Utils\\PropertyHelper.cs",
+              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\Utils\\PropertyHelper.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Utils\\PropertyHelper.cs",
+              "RelativeToolTip": "source\\Ksql.EntityFramework\\Utils\\PropertyHelper.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T09:26:28.057Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "TumblingWindow.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Windows\\TumblingWindow.cs",
+              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\Windows\\TumblingWindow.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Windows\\TumblingWindow.cs",
+              "RelativeToolTip": "source\\Ksql.EntityFramework\\Windows\\TumblingWindow.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T09:26:05.878Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "WindowedKsqlStream.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Windows\\WindowedKsqlStream.cs",
+              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\Windows\\WindowedKsqlStream.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Windows\\WindowedKsqlStream.cs",
+              "RelativeToolTip": "source\\Ksql.EntityFramework\\Windows\\WindowedKsqlStream.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T09:25:39.357Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "WindowSpecification.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Windows\\WindowSpecification.cs",
+              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\Windows\\WindowSpecification.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Windows\\WindowSpecification.cs",
+              "RelativeToolTip": "source\\Ksql.EntityFramework\\Windows\\WindowSpecification.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T09:25:13.492Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "KsqlQuery.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlQuery.cs",
+              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\KsqlQuery.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlQuery.cs",
+              "RelativeToolTip": "source\\Ksql.EntityFramework\\KsqlQuery.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T09:19:45.184Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "KsqlQueryProvider.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlQueryProvider.cs",
+              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\KsqlQueryProvider.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlQueryProvider.cs",
+              "RelativeToolTip": "source\\Ksql.EntityFramework\\KsqlQueryProvider.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T09:19:21.409Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "KsqlTransaction.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlTransaction.cs",
+              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\KsqlTransaction.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlTransaction.cs",
+              "RelativeToolTip": "source\\Ksql.EntityFramework\\KsqlTransaction.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T09:18:55.518Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
               "Title": "KsqlTable.cs",
-              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlTable.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlTable.cs",
               "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\KsqlTable.cs",
-              "ToolTip": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlTable.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlTable.cs",
               "RelativeToolTip": "source\\Ksql.EntityFramework\\KsqlTable.cs",
-              "ViewState": "AgIAACkAAAAAAAAAAAA6wE4AAACkAAAAAAAAAA==",
+              "ViewState": "AgIAADQBAAAAAAAAAAAEwFIBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-11T00:52:51.683Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "KsqlStream.cs",
-              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlStream.cs",
-              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\KsqlStream.cs",
-              "ToolTip": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlStream.cs",
-              "RelativeToolTip": "source\\Ksql.EntityFramework\\KsqlStream.cs",
-              "ViewState": "AgIAACsAAAAAAAAAAAAUwEIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-11T00:43:54.365Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "KsqlDbContext.cs",
-              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlDbContext.cs",
-              "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\KsqlDbContext.cs",
-              "ToolTip": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlDbContext.cs",
-              "RelativeToolTip": "source\\Ksql.EntityFramework\\KsqlDbContext.cs",
-              "ViewState": "AgIAADoAAAAAAAAAAAAmwFsAAAB2AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-11T00:42:44.533Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 15,
               "Title": "KafkaConsumer.cs",
-              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\Ksql.EntityFramework\\Kafka\\KafkaConsumer.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Kafka\\KafkaConsumer.cs",
               "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\Kafka\\KafkaConsumer.cs",
-              "ToolTip": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\Ksql.EntityFramework\\Kafka\\KafkaConsumer.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\Kafka\\KafkaConsumer.cs",
               "RelativeToolTip": "source\\Ksql.EntityFramework\\Kafka\\KafkaConsumer.cs",
               "ViewState": "AgIAADYAAAAAAAAAAAAqwFgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-11T00:41:49.482Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-11T00:41:49.482Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 14,
               "Title": "KsqlDatabase.cs",
-              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlDatabase.cs",
+              "DocumentMoniker": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlDatabase.cs",
               "RelativeDocumentMoniker": "source\\Ksql.EntityFramework\\KsqlDatabase.cs",
-              "ToolTip": "C:\\Users\\seiji_yfc8940\\source\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlDatabase.cs",
+              "ToolTip": "C:\\Users\\seiji_yfc8940\\repos\\syuriken\\source\\Ksql.EntityFramework\\KsqlDatabase.cs",
               "RelativeToolTip": "source\\Ksql.EntityFramework\\KsqlDatabase.cs",
-              "ViewState": "AgIAACkAAAAAAAAAAAAqwEwAAAAjAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAF4AAABFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-11T00:41:43.957Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-11T00:41:43.957Z"
             }
           ]
         }
