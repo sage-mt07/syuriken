@@ -6,12 +6,7 @@ using Ksql.EntityFramework.Schema;
 
 namespace Ksql.EntityFramework;
 
-/// <summary>
-/// Represents the result of a join operation on KSQL tables.
-/// </summary>
-/// <typeparam name="TLeft">The type of entity in the left table.</typeparam>
-/// <typeparam name="TRight">The type of entity in the right table.</typeparam>
-/// <typeparam name="TResult">The type of the result.</typeparam>
+
 internal class KsqlJoinTable<TLeft, TRight, TResult> : IKsqlTable<TResult>
     where TLeft : class
     where TRight : class
@@ -24,36 +19,14 @@ internal class KsqlJoinTable<TLeft, TRight, TResult> : IKsqlTable<TResult>
     private readonly IKsqlTable<TLeft> _leftTable;
     private readonly IKsqlTable<TRight> _rightTable;
 
-    /// <summary>
-    /// Gets the name of the result table.
-    /// </summary>
     public string Name { get; }
 
-    /// <summary>
-    /// Gets the type of the provider.
-    /// </summary>
     public Type ElementType => typeof(TResult);
 
-    /// <summary>
-    /// Gets the query expression.
-    /// </summary>
     public Expression Expression => Expression.Constant(this);
 
-    /// <summary>
-    /// Gets the query provider.
-    /// </summary>
     public IQueryProvider Provider => new KsqlQueryProvider();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="KsqlJoinTable{TLeft, TRight, TResult}"/> class.
-    /// </summary>
-    /// <param name="name">The name of the result table.</param>
-    /// <param name="context">The database context.</param>
-    /// <param name="schemaManager">The schema manager.</param>
-    /// <param name="leftTable">The left table.</param>
-    /// <param name="rightTable">The right table.</param>
-    /// <param name="joinOperation">The join operation.</param>
-    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
     public KsqlJoinTable(
         string name,
         KsqlDbContext context,
@@ -87,11 +60,6 @@ internal class KsqlJoinTable<TLeft, TRight, TResult> : IKsqlTable<TResult>
         Console.WriteLine($"Join operation: {_joinOperation.ToKsqlString()}");
     }
 
-    /// <summary>
-    /// Gets an entity from the table by its key.
-    /// </summary>
-    /// <param name="key">The primary key of the entity.</param>
-    /// <returns>A task representing the asynchronous operation, with the result containing the entity or null if not found.</returns>
     public async Task<TResult?> GetAsync(object key)
     {
         // In a real implementation, this would execute a KSQL query to get the entity
@@ -100,31 +68,17 @@ internal class KsqlJoinTable<TLeft, TRight, TResult> : IKsqlTable<TResult>
         return null;
     }
 
-    /// <summary>
-    /// Finds an entity from the table by its key.
-    /// </summary>
-    /// <param name="key">The primary key of the entity.</param>
-    /// <returns>A task representing the asynchronous operation, with the result containing the entity or null if not found.</returns>
     public Task<TResult?> FindAsync(object key)
     {
         return GetAsync(key);
     }
 
-    /// <summary>
-    /// Inserts an entity into the table.
-    /// </summary>
-    /// <param name="entity">The entity to insert.</param>
-    /// <returns>A task representing the asynchronous operation, with the result indicating whether the insert was successful.</returns>
     public Task<bool> InsertAsync(TResult entity)
     {
         // This operation is not directly supported for join results
         throw new NotSupportedException("Direct insertion to a join result table is not supported.");
     }
 
-    /// <summary>
-    /// Retrieves all entities from the table as a list.
-    /// </summary>
-    /// <returns>A task representing the asynchronous operation, with the result containing the list of entities.</returns>
     public async Task<List<TResult>> ToListAsync()
     {
         // In a real implementation, this would execute a KSQL query to get all entities
@@ -133,10 +87,6 @@ internal class KsqlJoinTable<TLeft, TRight, TResult> : IKsqlTable<TResult>
         return new List<TResult>();
     }
 
-    /// <summary>
-    /// Observes changes to the table and receives change notifications.
-    /// </summary>
-    /// <returns>An asynchronous enumerable of change notifications.</returns>
     public async IAsyncEnumerable<ChangeNotification<TResult>> ObserveChangesAsync()
     {
         // In a real implementation, this would observe changes to the join result table
@@ -145,30 +95,18 @@ internal class KsqlJoinTable<TLeft, TRight, TResult> : IKsqlTable<TResult>
         yield break;
     }
 
-    /// <summary>
-    /// Adds a table entity to be saved when SaveChanges is called.
-    /// </summary>
-    /// <param name="entity">The entity to add.</param>
     public void Add(TResult entity)
     {
         // This operation is not directly supported for join results
         throw new NotSupportedException("Direct addition to a join result table is not supported.");
     }
 
-    /// <summary>
-    /// Removes a table entity to be deleted when SaveChanges is called.
-    /// </summary>
-    /// <param name="entity">The entity to remove.</param>
     public void Remove(TResult entity)
     {
         // This operation is not directly supported for join results
         throw new NotSupportedException("Direct removal from a join result table is not supported.");
     }
 
-    /// <summary>
-    /// Gets an enumerator for the elements in the table.
-    /// </summary>
-    /// <returns>An enumerator for the elements in the table.</returns>
     public IEnumerator<TResult> GetEnumerator()
     {
         // This is a placeholder implementation for enumerating a table
@@ -176,26 +114,11 @@ internal class KsqlJoinTable<TLeft, TRight, TResult> : IKsqlTable<TResult>
         return Enumerable.Empty<TResult>().GetEnumerator();
     }
 
-    /// <summary>
-    /// Gets an enumerator for the elements in the table.
-    /// </summary>
-    /// <returns>An enumerator for the elements in the table.</returns>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
     }
 
-    /// <summary>
-    /// Joins this table with another table.
-    /// </summary>
-    /// <typeparam name="TJoinRight">The type of entity in the right table.</typeparam>
-    /// <typeparam name="TKey">The type of the join key.</typeparam>
-    /// <typeparam name="TJoinResult">The type of the result.</typeparam>
-    /// <param name="rightTable">The right table to join with.</param>
-    /// <param name="leftKeySelector">A function to extract the join key from this table's elements.</param>
-    /// <param name="rightKeySelector">A function to extract the join key from the right table's elements.</param>
-    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
-    /// <returns>A table containing the joined elements.</returns>
     public IKsqlTable<TJoinResult> Join<TJoinRight, TKey, TJoinResult>(
         IKsqlTable<TJoinRight> rightTable,
         Expression<Func<TResult, TKey>> leftKeySelector,
@@ -239,17 +162,6 @@ internal class KsqlJoinTable<TLeft, TRight, TResult> : IKsqlTable<TResult>
         return result;
     }
 
-    /// <summary>
-    /// Left joins this table with another table.
-    /// </summary>
-    /// <typeparam name="TJoinRight">The type of entity in the right table.</typeparam>
-    /// <typeparam name="TKey">The type of the join key.</typeparam>
-    /// <typeparam name="TJoinResult">The type of the result.</typeparam>
-    /// <param name="rightTable">The right table to join with.</param>
-    /// <param name="leftKeySelector">A function to extract the join key from this table's elements.</param>
-    /// <param name="rightKeySelector">A function to extract the join key from the right table's elements.</param>
-    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
-    /// <returns>A table containing the joined elements.</returns>
     public IKsqlTable<TJoinResult> LeftJoin<TJoinRight, TKey, TJoinResult>(
         IKsqlTable<TJoinRight> rightTable,
         Expression<Func<TResult, TKey>> leftKeySelector,
@@ -293,17 +205,6 @@ internal class KsqlJoinTable<TLeft, TRight, TResult> : IKsqlTable<TResult>
         return result;
     }
 
-    /// <summary>
-    /// Full outer joins this table with another table.
-    /// </summary>
-    /// <typeparam name="TJoinRight">The type of entity in the right table.</typeparam>
-    /// <typeparam name="TKey">The type of the join key.</typeparam>
-    /// <typeparam name="TJoinResult">The type of the result.</typeparam>
-    /// <param name="rightTable">The right table to join with.</param>
-    /// <param name="leftKeySelector">A function to extract the join key from this table's elements.</param>
-    /// <param name="rightKeySelector">A function to extract the join key from the right table's elements.</param>
-    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
-    /// <returns>A table containing the joined elements.</returns>
     public IKsqlTable<TJoinResult> FullOuterJoin<TJoinRight, TKey, TJoinResult>(
         IKsqlTable<TJoinRight> rightTable,
         Expression<Func<TResult, TKey>> leftKeySelector,

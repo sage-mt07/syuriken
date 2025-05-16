@@ -4,28 +4,16 @@ using Ksql.EntityFramework.Configuration;
 
 namespace Ksql.EntityFramework.Schema;
 
-/// <summary>
-/// Manages schema information for entity types in the KSQL database.
-/// </summary>
 public class SchemaManager
 {
     private readonly KsqlDbContextOptions _options;
     private readonly Dictionary<Type, TopicDescriptor> _topicDescriptors = new Dictionary<Type, TopicDescriptor>();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SchemaManager"/> class.
-    /// </summary>
-    /// <param name="options">The options for the database context.</param>
     public SchemaManager(KsqlDbContextOptions options)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
-    /// <summary>
-    /// Gets a topic descriptor for the specified entity type.
-    /// </summary>
-    /// <typeparam name="T">The entity type.</typeparam>
-    /// <returns>A topic descriptor for the entity type.</returns>
     public TopicDescriptor GetTopicDescriptor<T>() where T : class
     {
         var entityType = typeof(T);
@@ -38,11 +26,6 @@ public class SchemaManager
 
         return descriptor;
     }
-    /// <summary>
-    /// Gets the key properties for the specified entity type.
-    /// </summary>
-    /// <param name="entityType">The entity type.</param>
-    /// <returns>A list of key properties, ordered by key order.</returns>
     public IReadOnlyList<PropertyInfo> GetKeyProperties(Type entityType)
     {
         // Key属性を持つプロパティを取得し、Orderでソート
@@ -51,20 +34,10 @@ public class SchemaManager
             .OrderBy(p => p.GetCustomAttribute<KeyAttribute>().Order)
             .ToList();
     }
-    /// <summary>
-    /// Gets the key property names for the specified entity type.
-    /// </summary>
-    /// <param name="entityType">The entity type.</param>
-    /// <returns>An array of key property names.</returns>
     public string[] GetKeyPropertyNames(Type entityType)
     {
         return GetKeyProperties(entityType).Select(p => p.Name).ToArray();
     }
-    /// <summary>
-    /// Creates a key string from entity properties.
-    /// </summary>
-    /// <param name="entity">The entity.</param>
-    /// <returns>A composite key string.</returns>
     public string CreateKeyString<T>(T entity) where T : class
     {
         if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -84,11 +57,6 @@ public class SchemaManager
         var keyParts = keyProperties.Select(p => p.GetValue(entity)?.ToString() ?? string.Empty);
         return string.Join("|", keyParts);
     }
-    /// <summary>
-    /// Gets a schema string for the specified entity type.
-    /// </summary>
-    /// <param name="entityType">The entity type.</param>
-    /// <returns>A schema string for the entity type.</returns>
     public string GetSchemaString(Type entityType)
     {
         var properties = entityType.GetProperties();

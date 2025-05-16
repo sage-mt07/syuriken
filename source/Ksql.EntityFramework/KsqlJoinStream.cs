@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Ksql.EntityFramework;
-using System.Xml.Linq;
 using Ksql.EntityFramework.Interfaces;
 using Ksql.EntityFramework.Models;
 using Ksql.EntityFramework.Schema;
@@ -13,12 +7,6 @@ using Ksql.EntityFramework.Windows;
 
 namespace Ksql.EntityFramework;
 
-/// <summary>
-/// Represents the result of a join operation on KSQL streams.
-/// </summary>
-/// <typeparam name="TLeft">The type of entity in the left stream.</typeparam>
-/// <typeparam name="TRight">The type of entity in the right stream or table.</typeparam>
-/// <typeparam name="TResult">The type of the result.</typeparam>
 internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
     where TLeft : class
     where TRight : class
@@ -32,36 +20,14 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
     private readonly object _rightSource; // Can be IKsqlStream<TRight>, IKsqlTable<TRight>, KsqlStream<TRight>, or KsqlTable<TRight>
     private ErrorAction _errorAction = ErrorAction.Stop;
 
-    /// <summary>
-    /// Gets the name of the result stream.
-    /// </summary>
     public string Name { get; }
 
-    /// <summary>
-    /// Gets the type of the provider.
-    /// </summary>
     public Type ElementType => typeof(TResult);
 
-    /// <summary>
-    /// Gets the query expression.
-    /// </summary>
     public Expression Expression => Expression.Constant(this);
 
-    /// <summary>
-    /// Gets the query provider.
-    /// </summary>
     public IQueryProvider Provider => new KsqlQueryProvider();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="KsqlJoinStream{TLeft, TRight, TResult}"/> class.
-    /// </summary>
-    /// <param name="name">The name of the result stream.</param>
-    /// <param name="context">The database context.</param>
-    /// <param name="schemaManager">The schema manager.</param>
-    /// <param name="leftSource">The left stream.</param>
-    /// <param name="rightSource">The right stream or table.</param>
-    /// <param name="joinOperation">The join operation.</param>
-    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
     public KsqlJoinStream(
         string name,
         KsqlDbContext context,
@@ -96,11 +62,6 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
         Console.WriteLine($"Join operation: {_joinOperation.ToKsqlString()}");
     }
 
-    /// <summary>
-    /// Produces a single entity to the stream with an auto-generated key.
-    /// </summary>
-    /// <param name="entity">The entity to produce.</param>
-    /// <returns>A task representing the asynchronous operation, with the result indicating the offset of the produced record.</returns>
     public Task<long> ProduceAsync(TResult entity)
     {
         // This operation is not directly supported for join results
@@ -108,33 +69,18 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
         throw new NotSupportedException("Direct production to a join result stream is not supported.");
     }
 
-    /// <summary>
-    /// Produces a single entity to the stream with the specified key.
-    /// </summary>
-    /// <param name="key">The key for the record.</param>
-    /// <param name="entity">The entity to produce.</param>
-    /// <returns>A task representing the asynchronous operation, with the result indicating the offset of the produced record.</returns>
     public Task<long> ProduceAsync(string key, TResult entity)
     {
         // This operation is not directly supported for join results
         throw new NotSupportedException("Direct production to a join result stream is not supported.");
     }
 
-    /// <summary>
-    /// Produces multiple entities to the stream in a batch.
-    /// </summary>
-    /// <param name="entities">The entities to produce.</param>
-    /// <returns>A task representing the asynchronous operation.</returns>
     public Task ProduceBatchAsync(IEnumerable<TResult> entities)
     {
         // This operation is not directly supported for join results
         throw new NotSupportedException("Direct production to a join result stream is not supported.");
     }
 
-    /// <summary>
-    /// Subscribes to the stream and receives entities as they are produced.
-    /// </summary>
-    /// <returns>An asynchronous enumerable of entities.</returns>
     public async IAsyncEnumerable<TResult> SubscribeAsync()
     {
         // In a real implementation, this would subscribe to the join result stream
@@ -143,43 +89,22 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
         yield break;
     }
 
-    /// <summary>
-    /// Configures a watermark for this stream based on the timestamp property.
-    /// </summary>
-    /// <param name="timestampSelector">A function to select the timestamp property.</param>
-    /// <param name="maxOutOfOrderness">The maximum out-of-orderness to allow.</param>
-    /// <returns>The stream with watermark configured.</returns>
     public IKsqlStream<TResult> WithWatermark<TTimestamp>(Expression<Func<TResult, TTimestamp>> timestampSelector, TimeSpan maxOutOfOrderness)
     {
         // In a real implementation, this would configure a watermark on the stream
         return this;
     }
 
-    /// <summary>
-    /// Configures error handling for this stream.
-    /// </summary>
-    /// <param name="errorAction">The action to take when an error occurs.</param>
-    /// <returns>The stream with error handling configured.</returns>
     public IKsqlStream<TResult> OnError(ErrorAction errorAction)
     {
         _errorAction = errorAction;
         return this;
     }
 
-    /// <summary>
-    /// Creates a windowed stream using a tumbling window.
-    /// </summary>
-    /// <param name="window">The window specification.</param>
-    /// <returns>A windowed stream.</returns>
     public IWindowedKsqlStream<TResult> Window(Windows.WindowSpecification window)
     {
         return new WindowedKsqlStream<TResult>(this, window);
     }
-
-    /// <summary>
-    /// Observes changes to the stream and receives change notifications.
-    /// </summary>
-    /// <returns>An asynchronous enumerable of change notifications.</returns>
     public async IAsyncEnumerable<ChangeNotification<TResult>> ObserveChangesAsync()
     {
         // In a real implementation, this would observe changes to the join result stream
@@ -188,20 +113,12 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
         yield break;
     }
 
-    /// <summary>
-    /// Adds a stream entity to be saved when SaveChanges is called.
-    /// </summary>
-    /// <param name="entity">The entity to add.</param>
     public void Add(TResult entity)
     {
         // This operation is not directly supported for join results
         throw new NotSupportedException("Direct addition to a join result stream is not supported.");
     }
 
-    /// <summary>
-    /// Gets an enumerator for the elements in the stream.
-    /// </summary>
-    /// <returns>An enumerator for the elements in the stream.</returns>
     public IEnumerator<TResult> GetEnumerator()
     {
         // This is a placeholder implementation for enumerating a stream
@@ -209,27 +126,12 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
         return Enumerable.Empty<TResult>().GetEnumerator();
     }
 
-    /// <summary>
-    /// Gets an enumerator for the elements in the stream.
-    /// </summary>
-    /// <returns>An enumerator for the elements in the stream.</returns>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
     }
 
-    /// <summary>
-    /// Joins this stream with another stream within a specified window.
-    /// </summary>
-    /// <typeparam name="TJoinRight">The type of entity in the right stream.</typeparam>
-    /// <typeparam name="TKey">The type of the join key.</typeparam>
-    /// <typeparam name="TJoinResult">The type of the result.</typeparam>
-    /// <param name="rightStream">The right stream to join with.</param>
-    /// <param name="leftKeySelector">A function to extract the join key from this stream's elements.</param>
-    /// <param name="rightKeySelector">A function to extract the join key from the right stream's elements.</param>
-    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
-    /// <param name="window">The window specification for the join.</param>
-    /// <returns>A stream containing the joined elements.</returns>
+   
     public IKsqlStream<TJoinResult> Join<TJoinRight, TKey, TJoinResult>(
         IKsqlStream<TJoinRight> rightStream,
         Expression<Func<TResult, TKey>> leftKeySelector,
@@ -276,17 +178,7 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
         return resultStream;
     }
 
-    /// <summary>
-    /// Joins this stream with a table.
-    /// </summary>
-    /// <typeparam name="TJoinRight">The type of entity in the table.</typeparam>
-    /// <typeparam name="TKey">The type of the join key.</typeparam>
-    /// <typeparam name="TJoinResult">The type of the result.</typeparam>
-    /// <param name="table">The table to join with.</param>
-    /// <param name="leftKeySelector">A function to extract the join key from this stream's elements.</param>
-    /// <param name="rightKeySelector">A function to extract the join key from the table's elements.</param>
-    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
-    /// <returns>A stream containing the joined elements.</returns>
+    
     public IKsqlStream<TJoinResult> Join<TJoinRight, TKey, TJoinResult>(
         IKsqlTable<TJoinRight> table,
         Expression<Func<TResult, TKey>> leftKeySelector,
@@ -330,17 +222,7 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
         return resultStream;
     }
 
-    /// <summary>
-    /// Left joins this stream with a table.
-    /// </summary>
-    /// <typeparam name="TJoinRight">The type of entity in the table.</typeparam>
-    /// <typeparam name="TKey">The type of the join key.</typeparam>
-    /// <typeparam name="TJoinResult">The type of the result.</typeparam>
-    /// <param name="table">The table to join with.</param>
-    /// <param name="leftKeySelector">A function to extract the join key from this stream's elements.</param>
-    /// <param name="rightKeySelector">A function to extract the join key from the table's elements.</param>
-    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
-    /// <returns>A stream containing the joined elements.</returns>
+    
     public IKsqlStream<TJoinResult> LeftJoin<TJoinRight, TKey, TJoinResult>(
         IKsqlTable<TJoinRight> table,
         Expression<Func<TResult, TKey>> leftKeySelector,
@@ -394,12 +276,7 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
         throw new ArgumentException("The expression must be a property selector.", nameof(propertySelector));
     }
   
-    /// <summary>
-    /// Executes a projection operation on this stream.
-    /// </summary>
-    /// <typeparam name="TOutput">The type of the output.</typeparam>
-    /// <param name="selector">A function to select the output from this stream's elements.</param>
-    /// <returns>A stream with the projected elements.</returns>
+  
     public IKsqlStream<TOutput> Select<TOutput>(Expression<Func<TResult, TOutput>> selector)
         where TOutput : class
     {
@@ -433,11 +310,7 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
         return resultStream;
     }
 
-    /// <summary>
-    /// Filters the elements of this stream based on a predicate.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>A stream that contains elements from the input stream that satisfy the condition.</returns>
+   
     public IKsqlStream<TResult> Where(Expression<Func<TResult, bool>> predicate)
     {
         if (predicate == null) throw new ArgumentNullException(nameof(predicate));
@@ -470,12 +343,7 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
         return resultStream;
     }
 
-    /// <summary>
-    /// Groups the elements of this stream by a key.
-    /// </summary>
-    /// <typeparam name="TKey">The type of the key.</typeparam>
-    /// <param name="keySelector">A function to extract the key from each element.</param>
-    /// <returns>A stream with the grouped elements.</returns>
+  
     public IKsqlGroupedStream<TKey, TResult> GroupBy<TKey>(Expression<Func<TResult, TKey>> keySelector)
     {
         if (keySelector == null) throw new ArgumentNullException(nameof(keySelector));
@@ -493,13 +361,7 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
             keySelector);
     }
 
-    /// <summary>
-    /// Creates a new join result type for aggregation operations.
-    /// </summary>
-    /// <typeparam name="TOutput">The type of the output.</typeparam>
-    /// <param name="aggregateExpression">The aggregation expression in KSQL.</param>
-    /// <param name="resultCreator">A function to create the result from the aggregated value.</param>
-    /// <returns>A stream with the aggregated results.</returns>
+  
     public IKsqlStream<TOutput> Aggregate<TOutput>(
         string aggregateExpression,
         Func<object, TOutput> resultCreator)
@@ -535,14 +397,7 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
 
         return resultStream;
     }
-    /// <summary>
-    /// Subscribes to the stream and receives entities as they are produced.
-    /// </summary>
-    /// <param name="onNext">The action to invoke when a new entity is produced.</param>
-    /// <param name="onError">The action to invoke when an error occurs.</param>
-    /// <param name="onCompleted">The action to invoke when the subscription is completed.</param>
-    /// <param name="cancellationToken">A token to cancel the subscription.</param>
-    /// <returns>A subscription that can be used to cancel the subscription.</returns>
+   
     public IDisposable Subscribe(
         Action<TResult> onNext,
         Action<Exception>? onError = null,
@@ -591,11 +446,7 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
 
         return subscription;
     }
-    /// <summary>
-    /// Converts a predicate expression to a KSQL WHERE clause.
-    /// </summary>
-    /// <param name="predicate">The predicate expression to convert.</param>
-    /// <returns>A KSQL WHERE clause.</returns>
+
     private string ConvertPredicateToKSQL<T>(Expression<Func<T, bool>> predicate)
     {
         // This is a simplified implementation that would need to be expanded
@@ -613,11 +464,7 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
         return "1=1";
     }
 
-    /// <summary>
-    /// Converts an expression to a KSQL expression.
-    /// </summary>
-    /// <param name="expression">The expression to convert.</param>
-    /// <returns>A KSQL expression.</returns>
+  
     private string ConvertExpressionToKSQL(Expression expression)
     {
         if (expression is MemberExpression memberExpression)
@@ -641,11 +488,7 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
         return expression.ToString();
     }
 
-    /// <summary>
-    /// Gets the KSQL operator for an expression node type.
-    /// </summary>
-    /// <param name="nodeType">The expression node type.</param>
-    /// <returns>The KSQL operator.</returns>
+ 
     private string GetKsqlOperator(ExpressionType nodeType)
     {
         return nodeType switch
@@ -663,11 +506,6 @@ internal class KsqlJoinStream<TLeft, TRight, TResult> : IKsqlStream<TResult>
     }
 }
 
-/// <summary>
-/// Represents a grouped stream in KSQL.
-/// </summary>
-/// <typeparam name="TKey">The type of the grouping key.</typeparam>
-/// <typeparam name="TElement">The type of the elements in the stream.</typeparam>
 internal class KsqlGroupedStream<TKey, TElement> : IKsqlGroupedStream<TKey, TElement>
     where TElement : class
 {
@@ -701,14 +539,7 @@ internal class KsqlGroupedStream<TKey, TElement> : IKsqlGroupedStream<TKey, TEle
     /// </summary>
     public Expression<Func<TElement, TKey>> KeySelector => _keySelector;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="KsqlGroupedStream{TKey, TElement}"/> class.
-    /// </summary>
-    /// <param name="name">The name of the grouped stream.</param>
-    /// <param name="context">The database context.</param>
-    /// <param name="schemaManager">The schema manager.</param>
-    /// <param name="source">The source stream.</param>
-    /// <param name="keySelector">The key selector.</param>
+
     public KsqlGroupedStream(
         string name,
         KsqlDbContext context,
@@ -723,15 +554,7 @@ internal class KsqlGroupedStream<TKey, TElement> : IKsqlGroupedStream<TKey, TEle
         _keySelector = keySelector ?? throw new ArgumentNullException(nameof(keySelector));
     }
 
-    /// <summary>
-    /// Aggregates the elements of the stream.
-    /// </summary>
-    /// <typeparam name="TAccumulate">The type of the accumulator.</typeparam>
-    /// <typeparam name="TResult">The type of the result.</typeparam>
-    /// <param name="seed">The initial accumulator value.</param>
-    /// <param name="accumulator">A function to update the accumulator based on an element.</param>
-    /// <param name="resultSelector">A function to transform the accumulator into the result type.</param>
-    /// <returns>A table with the aggregated results.</returns>
+
     public IKsqlTable<TResult> Aggregate<TAccumulate, TResult>(
         TAccumulate seed,
         Expression<Func<TAccumulate, TElement, TAccumulate>> accumulator,
@@ -743,47 +566,24 @@ internal class KsqlGroupedStream<TKey, TElement> : IKsqlGroupedStream<TKey, TEle
         throw new NotImplementedException("Aggregation is not implemented yet.");
     }
 
-    /// <summary>
-    /// Gets an enumerator for the elements in the grouped stream.
-    /// </summary>
-    /// <returns>An enumerator for the elements in the grouped stream.</returns>
+
     public IEnumerator<TElement> GetEnumerator()
     {
         return _source.GetEnumerator();
     }
 
-    /// <summary>
-    /// Gets an enumerator for the elements in the grouped stream.
-    /// </summary>
-    /// <returns>An enumerator for the elements in the grouped stream.</returns>
     System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
     }
 }
 
-/// <summary>
-/// Represents a grouped stream in KSQL.
-/// </summary>
-/// <typeparam name="TKey">The type of the grouping key.</typeparam>
-/// <typeparam name="TElement">The type of the elements in the stream.</typeparam>
 public interface IKsqlGroupedStream<TKey, TElement> : IQueryable<TElement>
     where TElement : class
 {
-    /// <summary>
-    /// Gets the key selector for the grouped stream.
-    /// </summary>
+
     Expression<Func<TElement, TKey>> KeySelector { get; }
 
-    /// <summary>
-    /// Aggregates the elements of the stream.
-    /// </summary>
-    /// <typeparam name="TAccumulate">The type of the accumulator.</typeparam>
-    /// <typeparam name="TResult">The type of the result.</typeparam>
-    /// <param name="seed">The initial accumulator value.</param>
-    /// <param name="accumulator">A function to update the accumulator based on an element.</param>
-    /// <param name="resultSelector">A function to transform the accumulator into the result type.</param>
-    /// <returns>A table with the aggregated results.</returns>
     IKsqlTable<TResult> Aggregate<TAccumulate, TResult>(
         TAccumulate seed,
         Expression<Func<TAccumulate, TElement, TAccumulate>> accumulator,
@@ -791,10 +591,7 @@ public interface IKsqlGroupedStream<TKey, TElement> : IQueryable<TElement>
         where TResult : class;
 }
 
-/// <summary>
-/// Represents a subscription to a KSQL stream.
-/// </summary>
-/// <typeparam name="T">The type of entity in the stream.</typeparam>
+
 internal class KsqlSubscription<T> : IDisposable
     where T : class
 {
@@ -803,19 +600,14 @@ internal class KsqlSubscription<T> : IDisposable
     private Task? _runningTask;
     private bool _disposed;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="KsqlSubscription{T}"/> class.
-    /// </summary>
-    /// <param name="subscriptionTask">The task to run for the subscription.</param>
+
     public KsqlSubscription(Func<Task> subscriptionTask)
     {
         _subscriptionTask = subscriptionTask ?? throw new ArgumentNullException(nameof(subscriptionTask));
         _cancellationTokenSource = new CancellationTokenSource();
     }
 
-    /// <summary>
-    /// Starts the subscription.
-    /// </summary>
+
     public void Start()
     {
         if (_disposed) throw new ObjectDisposedException(nameof(KsqlSubscription<T>));
@@ -824,19 +616,13 @@ internal class KsqlSubscription<T> : IDisposable
         _runningTask = Task.Run(_subscriptionTask);
     }
 
-    /// <summary>
-    /// Disposes the subscription, canceling any ongoing operations.
-    /// </summary>
+
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
 
-    /// <summary>
-    /// Disposes the subscription.
-    /// </summary>
-    /// <param name="disposing">Whether to dispose managed resources.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)

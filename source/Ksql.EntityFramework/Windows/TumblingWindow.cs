@@ -1,43 +1,22 @@
 namespace Ksql.EntityFramework.Windows;
 
-/// <summary>
-/// Represents a tumbling window specification in KSQL.
-/// </summary>
+
 public class TumblingWindow : WindowSpecification
 {
-    /// <summary>
-    /// Gets the size of the window.
-    /// </summary>
     public TimeSpan Size { get; }
 
-    /// <summary>
-    /// Gets the type of window.
-    /// </summary>
     public override WindowType WindowType => WindowType.Tumbling;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TumblingWindow"/> class with the specified size.
-    /// </summary>
-    /// <param name="size">The size of the window.</param>
     public TumblingWindow(TimeSpan size)
     {
         Size = size;
     }
 
-    /// <summary>
-    /// Creates a tumbling window with the specified size.
-    /// </summary>
-    /// <param name="size">The size of the window.</param>
-    /// <returns>A tumbling window specification.</returns>
     public static TumblingWindow Of(TimeSpan size)
     {
         return new TumblingWindow(size);
     }
 
-    /// <summary>
-    /// Gets a string representation of the window specification in KSQL syntax.
-    /// </summary>
-    /// <returns>A string representing the window specification.</returns>
     public override string ToKsqlString()
     {
         // Convert the TimeSpan to a KSQL time unit

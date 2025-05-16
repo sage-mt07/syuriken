@@ -9,54 +9,26 @@ using Ksql.EntityFramework.Schema;
 
 namespace Ksql.EntityFramework;
 
-/// <summary>
-/// Implementation of a KSQL table.
-/// </summary>
-/// <typeparam name="T">The type of entity in the table.</typeparam>
+
 public class KsqlTable<T> : IKsqlTable<T> where T : class
 {
     private readonly KsqlDbContext _context;
     private readonly SchemaManager _schemaManager;
     private readonly TableOptions _options;
 
-    /// <summary>
-    /// Gets the name of the table.
-    /// </summary>
     public string Name { get; }
 
-    /// <summary>
-    /// Gets the type of the provider.
-    /// </summary>
     public Type ElementType => typeof(T);
 
-    /// <summary>
-    /// Gets the query expression.
-    /// </summary>
     public Expression Expression => Expression.Constant(this);
 
-    /// <summary>
-    /// Gets the query provider.
-    /// </summary>
     public IQueryProvider Provider => new KsqlQueryProvider();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="KsqlTable{T}"/> class.
-    /// </summary>
-    /// <param name="name">The name of the table.</param>
-    /// <param name="context">The database context.</param>
-    /// <param name="schemaManager">The schema manager.</param>
     public KsqlTable(string name, KsqlDbContext context, SchemaManager schemaManager)
         : this(name, context, schemaManager, new TableOptions())
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="KsqlTable{T}"/> class with the specified options.
-    /// </summary>
-    /// <param name="name">The name of the table.</param>
-    /// <param name="context">The database context.</param>
-    /// <param name="schemaManager">The schema manager.</param>
-    /// <param name="options">The options for the table.</param>
     public KsqlTable(string name, KsqlDbContext context, SchemaManager schemaManager, TableOptions options)
     {
         Name = name ?? throw new ArgumentNullException(nameof(name));
@@ -75,11 +47,6 @@ public class KsqlTable<T> : IKsqlTable<T> where T : class
         return new Kafka.KafkaConsumer<string, T>(Name, _context.Options, groupId);
     }
 
-    /// <summary>
-    /// Gets an entity from the table by its key.
-    /// </summary>
-    /// <param name="key">The primary key of the entity.</param>
-    /// <returns>A task representing the asynchronous operation, with the result containing the entity or null if not found.</returns>
     public async Task<T?> GetAsync(object key)
     {
         // For a real implementation, we would use the KSQL pull query API
@@ -115,21 +82,11 @@ public class KsqlTable<T> : IKsqlTable<T> where T : class
         }
     }
 
-    /// <summary>
-    /// Finds an entity from the table by its key.
-    /// </summary>
-    /// <param name="key">The primary key of the entity.</param>
-    /// <returns>A task representing the asynchronous operation, with the result containing the entity or null if not found.</returns>
     public Task<T?> FindAsync(object key)
     {
         return GetAsync(key);
     }
 
-    /// <summary>
-    /// Inserts an entity into the table.
-    /// </summary>
-    /// <param name="entity">The entity to insert.</param>
-    /// <returns>A task representing the asynchronous operation, with the result indicating whether the insert was successful.</returns>
     public async Task<bool> InsertAsync(T entity)
     {
         try
@@ -153,10 +110,6 @@ public class KsqlTable<T> : IKsqlTable<T> where T : class
         return _schemaManager.CreateKeyString(entity);
     }
 
-    /// <summary>
-    /// Adds a table entity to be saved when SaveChanges is called.
-    /// </summary>
-    /// <param name="entity">The entity to add.</param>
     public void Add(T entity)
     {
         if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -164,10 +117,6 @@ public class KsqlTable<T> : IKsqlTable<T> where T : class
         _context.AddToPendingChanges(entity);
     }
 
-    /// <summary>
-    /// Removes a table entity to be deleted when SaveChanges is called.
-    /// </summary>
-    /// <param name="entity">The entity to remove.</param>
     public void Remove(T entity)
     {
         if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -176,10 +125,6 @@ public class KsqlTable<T> : IKsqlTable<T> where T : class
         // This is a placeholder implementation - in a real implementation, this would mark the entity for deletion
     }
 
-    /// <summary>
-    /// Retrieves all entities from the table as a list.
-    /// </summary>
-    /// <returns>A task representing the asynchronous operation, with the result containing the list of entities.</returns>
     public async Task<List<T>> ToListAsync()
     {
         var result = new List<T>();
@@ -215,10 +160,6 @@ public class KsqlTable<T> : IKsqlTable<T> where T : class
 
 
 
-    /// <summary>
-    /// Gets a descriptor for this table.
-    /// </summary>
-    /// <returns>A table descriptor.</returns>
     internal TableDescriptor GetTableDescriptor()
     {
         var topicDescriptor = _schemaManager.GetTopicDescriptor<T>();
@@ -231,10 +172,6 @@ public class KsqlTable<T> : IKsqlTable<T> where T : class
         };
     }
 
-    /// <summary>
-    /// Gets an enumerator for the elements in the table.
-    /// </summary>
-    /// <returns>An enumerator for the elements in the table.</returns>
     public IEnumerator<T> GetEnumerator()
     {
         // This is a placeholder implementation for enumerating a table
@@ -242,25 +179,10 @@ public class KsqlTable<T> : IKsqlTable<T> where T : class
         return Enumerable.Empty<T>().GetEnumerator();
     }
 
-    /// <summary>
-    /// Gets an enumerator for the elements in the table.
-    /// </summary>
-    /// <returns>An enumerator for the elements in the table.</returns>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
     }
-    /// <summary>
-    /// Joins this table with another table.
-    /// </summary>
-    /// <typeparam name="TRight">The type of entity in the right table.</typeparam>
-    /// <typeparam name="TKey">The type of the join key.</typeparam>
-    /// <typeparam name="TResult">The type of the result.</typeparam>
-    /// <param name="rightTable">The right table to join with.</param>
-    /// <param name="leftKeySelector">A function to extract the join key from this table's elements.</param>
-    /// <param name="rightKeySelector">A function to extract the join key from the right table's elements.</param>
-    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
-    /// <returns>A table containing the joined elements.</returns>
     public IKsqlTable<TResult> Join<TRight, TKey, TResult>(
         IKsqlTable<TRight> rightTable,
         Expression<Func<T, TKey>> leftKeySelector,
@@ -305,17 +227,6 @@ public class KsqlTable<T> : IKsqlTable<T> where T : class
         return resultTable;
     }
 
-    /// <summary>
-    /// Left joins this table with another table.
-    /// </summary>
-    /// <typeparam name="TRight">The type of entity in the right table.</typeparam>
-    /// <typeparam name="TKey">The type of the join key.</typeparam>
-    /// <typeparam name="TResult">The type of the result.</typeparam>
-    /// <param name="rightTable">The right table to join with.</param>
-    /// <param name="leftKeySelector">A function to extract the join key from this table's elements.</param>
-    /// <param name="rightKeySelector">A function to extract the join key from the right table's elements.</param>
-    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
-    /// <returns>A table containing the joined elements.</returns>
     public IKsqlTable<TResult> LeftJoin<TRight, TKey, TResult>(
         IKsqlTable<TRight> rightTable,
         Expression<Func<T, TKey>> leftKeySelector,
@@ -359,17 +270,6 @@ public class KsqlTable<T> : IKsqlTable<T> where T : class
         return resultTable;
     }
 
-    /// <summary>
-    /// Full outer joins this table with another table.
-    /// </summary>
-    /// <typeparam name="TRight">The type of entity in the right table.</typeparam>
-    /// <typeparam name="TKey">The type of the join key.</typeparam>
-    /// <typeparam name="TResult">The type of the result.</typeparam>
-    /// <param name="rightTable">The right table to join with.</param>
-    /// <param name="leftKeySelector">A function to extract the join key from this table's elements.</param>
-    /// <param name="rightKeySelector">A function to extract the join key from the right table's elements.</param>
-    /// <param name="resultSelector">A function to create a result from the joined elements.</param>
-    /// <returns>A table containing the joined elements.</returns>
     public IKsqlTable<TResult> FullOuterJoin<TRight, TKey, TResult>(
         IKsqlTable<TRight> rightTable,
         Expression<Func<T, TKey>> leftKeySelector,
@@ -426,9 +326,7 @@ public class KsqlTable<T> : IKsqlTable<T> where T : class
 // JOINägí£ÉwÉãÉpÅ[
 public static class JoinExtensions
 {
-    /// <summary>
-    /// Creates a join condition for properties with matching names in both tables.
-    /// </summary>
+
     public static string CreateJoinCondition(string leftTableName, string rightTableName, IEnumerable<string> keyProperties)
     {
         if (keyProperties == null) throw new ArgumentNullException(nameof(keyProperties));
@@ -439,9 +337,6 @@ public static class JoinExtensions
         return string.Join(" AND ", conditions);
     }
 
-    /// <summary>
-    /// Creates a join condition from key selectors.
-    /// </summary>
     public static string CreateJoinCondition<TLeft, TRight, TKey>(
         string leftTableName,
         string rightTableName,
